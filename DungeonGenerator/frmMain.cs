@@ -51,12 +51,57 @@ namespace DungeonGenerator {
 		void Step_Click(object sender, EventArgs e) {
 			var step = (GenerationStep)((Button)sender).Tag;
 			gen.Generate(step + 1);
-			Render();
+			if (cbBorder.Checked)
+				Render();
+			else
+				RenderBorder();
 			foreach (var btn in btns)
 				btn.Enabled = (GenerationStep)btn.Tag >= gen.Step;
 		}
 
 		void Render() {
+			var rms = gen.GetRooms().ToList();
+			int dx = int.MaxValue, dy = int.MaxValue;
+			int mx = int.MinValue, my = int.MinValue;
+			foreach (var rm in rms) {
+				var bounds = rm.Bounds;
+
+				if (bounds.X < dx)
+					dx = bounds.X;
+				if (bounds.Y < dy)
+					dy = bounds.Y;
+
+				if (bounds.MaxX > mx)
+					mx = bounds.MaxX;
+				if (bounds.MaxY > my)
+					my = bounds.MaxY;
+			}
+
+			const int Factor = 4;
+
+			var bmp = new Bitmap((mx - dx + 4) * Factor, (my - dy + 4) * Factor);
+			using (var g = Graphics.FromImage(bmp))
+				foreach (var rm in rms) {
+					var brush = Brushes.Black;
+					if (rm.Type == RoomType.Start)
+						brush = Brushes.Red;
+					else if (rm.Type == RoomType.Target)
+						brush = Brushes.Green;
+					else if (rm.Type == RoomType.Special)
+						brush = Brushes.Blue;
+
+					g.FillRectangle(brush,
+						(rm.Pos.X - dx) * Factor + 2 * Factor, (rm.Pos.Y - dy) * Factor + 2 * Factor,
+						rm.Width * Factor, rm.Height * Factor);
+				}
+
+			var original = box.Image;
+			box.Image = bmp;
+			if (original != null)
+				original.Dispose();
+		}
+
+		void RenderBorder() {
 			var rms = gen.GetRooms().ToList();
 			int dx = int.MaxValue, dy = int.MaxValue;
 			int mx = int.MinValue, my = int.MinValue;
@@ -103,9 +148,14 @@ namespace DungeonGenerator {
 		}
 
 		void btnNew_Click(object sender, EventArgs e) {
+			btnNewStep_Click(sender, e);
+			Step_Click(btns.Last(), e);
+		}
+
+		void btnNewStep_Click(object sender, EventArgs e) {
 			var seed = rand.Next();
 			gen = new Generator(seed, new PirateCaveTemplate());
-			lblSeed.Text = "Seed: " + seed;
+			Text = ProductName + " [Seed: " + seed + "]";
 
 			stepsPane.Enabled = true;
 			foreach (var btn in btns)
@@ -115,6 +165,15 @@ namespace DungeonGenerator {
 			box.Image = null;
 			if (original != null)
 				original.Dispose();
+		}
+
+		void cbBorder_CheckedChanged(object sender, EventArgs e) {
+			if (stepsPane.Enabled) {
+				if (cbBorder.Checked)
+					Render();
+				else
+					RenderBorder();
+			}
 		}
 	}
 }
