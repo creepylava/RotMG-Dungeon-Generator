@@ -21,19 +21,19 @@
 using System;
 using System.Diagnostics;
 
-namespace DungeonGenerator.Graph {
-	internal class Edge {
+namespace DungeonGenerator.Dungeon {
+	public class Edge {
 		Edge() {
 		}
 
-		public Node NodeA { get; private set; }
-		public Node NodeB { get; private set; }
+		public Room RoomA { get; private set; }
+		public Room RoomB { get; private set; }
 
-		public static void Link(Node a, Node b) {
+		public static void Link(Room a, Room b) {
 			Debug.Assert(a != b);
 			var edge = new Edge {
-				NodeA = a,
-				NodeB = b
+				RoomA = a,
+				RoomB = b
 			};
 			a.Edges.Add(edge);
 			b.Edges.Add(edge);

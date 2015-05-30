@@ -19,7 +19,6 @@
 */
 
 using System;
-using DungeonGenerator.Graph;
 using DungeonGenerator.Templates;
 using RotMG.Common.Rasterizer;
 
@@ -32,18 +31,14 @@ namespace DungeonGenerator.Dungeon {
 
 		public Room[] Rooms { get; private set; }
 
-		internal DungeonGraph(DungeonTemplate template, Node[] nodes) {
+		internal DungeonGraph(DungeonTemplate template, Room[] rooms) {
 			Template = template;
 
-			var rms = new Room[nodes.Length];
 			int dx = int.MaxValue, dy = int.MaxValue;
 			int mx = int.MinValue, my = int.MinValue;
 
-			for (int i = 0; i < nodes.Length; i++) {
-				var room = nodes[i].Content;
-				rms[i] = room;
-
-				var bounds = room.Bounds;
+			for (int i = 0; i < rooms.Length; i++) {
+				var bounds = rooms[i].Bounds;
 
 				if (bounds.X < dx)
 					dx = bounds.X;
@@ -59,11 +54,11 @@ namespace DungeonGenerator.Dungeon {
 			Width = mx - dx + 4;
 			Height = mx - dx + 4;
 
-			for (int i = 0; i < rms.Length; i++) {
-				var pos = rms[i].Pos;
-				rms[i].Pos = new Point(pos.X - dx + 2, pos.Y - dy + 2);
+			for (int i = 0; i < rooms.Length; i++) {
+				var pos = rooms[i].Pos;
+				rooms[i].Pos = new Point(pos.X - dx + 2, pos.Y - dy + 2);
 			}
-			Rooms = rms;
+			Rooms = rooms;
 		}
 	}
 }

@@ -19,6 +19,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Dungeon {
@@ -30,6 +31,11 @@ namespace DungeonGenerator.Dungeon {
 	}
 
 	public abstract class Room {
+		protected Room() {
+			Edges = new List<Edge>(4);
+		}
+
+		public IList<Edge> Edges { get; private set; }
 		public int Depth { get; internal set; }
 
 		public abstract RoomType Type { get; }
