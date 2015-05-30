@@ -20,7 +20,7 @@
 
 using System;
 using DungeonGenerator.Dungeon;
-using RotMG.Common.BMap;
+using DungeonGenerator.Templates;
 using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator {
@@ -38,16 +38,16 @@ namespace DungeonGenerator {
 	internal class Rasterizer {
 		readonly Random rand;
 		readonly DungeonGraph graph;
-		readonly BitmapRasterizer<MapTile> rasterizer;
+		readonly BitmapRasterizer<DungeonTile> rasterizer;
 
-		const uint Space = 0xfe;
+		static readonly TileType Space = new TileType(0x00fe, "Space");
 
 		public RasterizationStep Step { get; set; }
 
 		public Rasterizer(int seed, DungeonGraph graph) {
 			rand = new Random(seed);
 			this.graph = graph;
-			rasterizer = new BitmapRasterizer<MapTile>(graph.Width, graph.Height);
+			rasterizer = new BitmapRasterizer<DungeonTile>(graph.Width, graph.Height);
 			Step = RasterizationStep.Initialize;
 		}
 
@@ -60,7 +60,7 @@ namespace DungeonGenerator {
 		void RunStep() {
 			switch (Step) {
 				case RasterizationStep.Initialize:
-					rasterizer.Clear(new MapTile {
+					rasterizer.Clear(new DungeonTile {
 						TileType = Space
 					});
 					graph.Template.InitializeRasterization(graph);
@@ -70,6 +70,10 @@ namespace DungeonGenerator {
 					graph.Template.CreateBackground().Rasterize(rasterizer);
 					break;
 
+				case RasterizationStep.Corridor:
+					RasterizeCorridors();
+					break;
+
 				case RasterizationStep.Overlay:
 					graph.Template.CreateOverlay().Rasterize(rasterizer);
 					break;
@@ -77,7 +81,58 @@ namespace DungeonGenerator {
 			Step++;
 		}
 
-		public MapTile[,] ExportMap() {
+		void RasterizeCorridors() {
+			var corridor = graph.Template.CreateCorridor();
+
+			foreach (var room in graph.Rooms)
+				foreach (var edge in room.Edges) {
+					if (edge.RoomA != room)
+						continue;
+					RasterizeCorridor(corridor, edge);
+				}
+		}
+
+		void CreateCorridor(Room src, Room dst, out Point srcPos, out Point dstPos) {
+			var srcX = new Range(src.Bounds.X, src.Bounds.MaxX);
+			var srcY = new Range(src.Bounds.Y, src.Bounds.MaxY);
+			var dstX = new Range(dst.Bounds.X, dst.Bounds.MaxX);
+			var dstY = new Range(dst.Bounds.Y, dst.Bounds.MaxY);
+
+			Range isect;
+			if (!(isect = srcX.Intersection(dstX)).IsEmpty && srcY.Intersection(dstY).IsEmpty) {
+				// South / North
+				int x = rand.Next(isect.Begin, isect.End - graph.Template.CorridorWidth + 1);
+				srcPos = new Point(x, src.Pos.Y + src.Height / 2);
+				dstPos = new Point(x, dst.Pos.Y + dst.Height / 2);
+			}
+			else if (srcX.Intersection(dstX).IsEmpty && !(isect = srcY.Intersection(dstY)).IsEmpty) {
+				// East / West
+				int y = rand.Next(isect.Begin, isect.End - graph.Template.CorridorWidth + 1);
+				srcPos = new Point(src.Pos.X + src.Width / 2, y);
+				dstPos = new Point(dst.Pos.X + dst.Width / 2, y);
+			}
+			else
+				throw new InvalidOperationException();
+		}
+
+		void RasterizeCorridor(MapCorridor corridor, Edge edge) {
+			Point srcPos, dstPos;
+			CreateCorridor(edge.RoomA, edge.RoomB, out srcPos, out dstPos);
+			corridor.Rasterize(rasterizer, edge.RoomA, edge.RoomB, srcPos, dstPos);
+		}
+
+		void RasterizeCorridors() {
+			var corridor = graph.Template.CreateCorridor();
+
+			foreach (var room in graph.Rooms)
+				foreach (var edge in room.Edges) {
+					if (edge.RoomA != room)
+						continue;
+					RasterizeCorridor(corridor, edge);
+				}
+		}
+
+		public DungeonTile[,] ExportMap() {
 			return rasterizer.Bitmap;
 		}
 	}

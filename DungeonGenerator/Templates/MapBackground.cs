@@ -19,12 +19,12 @@
 */
 
 using System;
-using RotMG.Common.BMap;
+using DungeonGenerator.Dungeon;
 using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates {
 	public class MapBackground {
-		public virtual void Rasterize(BitmapRasterizer<MapTile> rasterizer) {
+		public virtual void Rasterize(BitmapRasterizer<DungeonTile> rasterizer) {
 		}
 	}
 }

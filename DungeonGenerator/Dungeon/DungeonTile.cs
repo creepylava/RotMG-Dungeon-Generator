@@ -19,12 +19,22 @@
 */
 
 using System;
-using DungeonGenerator.Dungeon;
-using RotMG.Common.Rasterizer;
+using RotMG.Common.BMap;
 
-namespace DungeonGenerator.Templates {
-	public class MapOverlay {
-		public virtual void Rasterize(BitmapRasterizer<DungeonTile> rasterizer) {
+namespace DungeonGenerator.Dungeon {
+	public struct TileType {
+		public readonly uint Id;
+		public readonly string Name;
+
+		public TileType(uint id, string name) {
+			Id = id;
+			Name = name;
 		}
+	}
+
+	public struct DungeonTile {
+		public TileType TileType;
+		public string Region;
+		public MapObject Object;
 	}
 }

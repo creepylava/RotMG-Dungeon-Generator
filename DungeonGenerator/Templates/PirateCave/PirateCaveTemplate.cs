@@ -24,6 +24,12 @@ using RotMG.Common;
 
 namespace DungeonGenerator.Templates.PirateCave {
 	public class PirateCaveTemplate : DungeonTemplate {
+		public static readonly TileType LightSand = new TileType(0x00bd, "Light Sand");
+		public static readonly TileType BrownLines = new TileType(0x000c, "Brown Lines");
+		public static readonly TileType ShallowWater = new TileType(0x0073, "Shallow Water");
+		public static readonly TileType Composite = new TileType(0x00fd, "Composite");
+
+
 		public override int MaxDepth { get { return 10; } }
 
 		NormDist targetDepth;
@@ -55,6 +61,10 @@ namespace DungeonGenerator.Templates.PirateCave {
 
 		public override Room CreateNormal(int depth, Room prev) {
 			return new NormalRoom(Rand.Next(8, 15), Rand.Next(8, 15));
+		}
+
+		public override MapCorridor CreateCorridor() {
+			return new Corridor();
 		}
 	}
 }

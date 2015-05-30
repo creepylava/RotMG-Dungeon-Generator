@@ -20,12 +20,11 @@
 
 using System;
 using DungeonGenerator.Dungeon;
-using RotMG.Common.BMap;
 using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates {
 	public class MapCorridor {
-		public virtual void Rasterize(BitmapRasterizer<MapTile> rasterizer, Room src, Room dst) {
+		public virtual void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Room src, Room dst, Point srcPos, Point dstPos) {
 		}
 	}
 }

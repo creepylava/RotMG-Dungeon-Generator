@@ -41,6 +41,7 @@
 			this.box.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
 			this.box.TabIndex = 0;
 			this.box.TabStop = false;
+			this.box.DoubleClick += new System.EventHandler(this.box_DoubleClick);
 			// 
 			// panel1
 			// 

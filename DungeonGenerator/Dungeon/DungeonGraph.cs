@@ -52,7 +52,7 @@ namespace DungeonGenerator.Dungeon {
 			}
 
 			Width = mx - dx + 4;
-			Height = mx - dx + 4;
+			Height = my - dy + 4;
 
 			for (int i = 0; i < rooms.Length; i++) {
 				var pos = rooms[i].Pos;

@@ -57,5 +57,9 @@ namespace DungeonGenerator.Templates {
 		public virtual MapOverlay CreateOverlay() {
 			return new MapOverlay();
 		}
+
+		public virtual MapCorridor CreateCorridor() {
+			return new MapCorridor();
+		}
 	}
 }

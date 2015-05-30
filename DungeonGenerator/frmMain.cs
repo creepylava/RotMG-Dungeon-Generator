@@ -193,8 +193,11 @@ namespace DungeonGenerator {
 
 			for (int y = 0; y < bmp.Height; y++)
 				for (int x = 0; x < bmp.Width; x++) {
-					if (map[x, y].TileType != 0xfe)
-						bmp.SetPixel(x, y, Color.Black);
+					var type = map[x, y].TileType;
+					if (type.Id != 0xfe &&
+					    type.Name != null) {
+						bmp.SetPixel(x, y, Color.FromArgb(type.Name.GetHashCode() & 0x00ffffff | (0xff << 24)));
+					}
 				}
 
 			var original = box.Image;
@@ -227,6 +230,11 @@ namespace DungeonGenerator {
 		void cbBorder_CheckedChanged(object sender, EventArgs e) {
 			if (stepsPane.Enabled)
 				Render();
+		}
+
+		void box_DoubleClick(object sender, EventArgs e) {
+			if (box.Image != null)
+				Clipboard.SetImage(box.Image);
 		}
 	}
 }
