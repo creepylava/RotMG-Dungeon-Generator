@@ -42,7 +42,7 @@ namespace DungeonGenerator {
 			var bounds = rm.Bounds;
 			bool hit = false;
 			Action<SpatialNode<Room>> check = node => {
-				if (node.Item.Bounds.Intersection(bounds).IsEmpty)
+				if (!node.Item.Bounds.Intersection(bounds).IsEmpty)
 					hit = true;
 			};
 
