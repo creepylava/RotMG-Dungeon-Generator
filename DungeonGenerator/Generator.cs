@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DungeonGenerator.Dungeon;
 using DungeonGenerator.Graph;
 using DungeonGenerator.Templates;
@@ -39,11 +40,12 @@ namespace DungeonGenerator {
 	public class Generator {
 		readonly Random rand;
 		readonly DungeonTemplate template;
-		GenerationStep step;
 
 		RoomCollision collision;
 		Node rootNode;
 		List<Node> nodes;
+
+		public GenerationStep Step { get; set; }
 
 		public Generator(int seed, DungeonTemplate template) {
 			rand = new Random(seed);
@@ -51,15 +53,19 @@ namespace DungeonGenerator {
 		}
 
 		public void Generate(GenerationStep? targetStep = null) {
-			step = GenerationStep.Initialize;
-			while (step != (targetStep ?? GenerationStep.Finish)) {
+			Step = GenerationStep.Initialize;
+			while (Step != targetStep && Step != GenerationStep.Finish) {
 				RunStep();
-				step++;
+				Step++;
 			}
 		}
 
+		public IEnumerable<Room> GetRooms() {
+			return nodes.Select(node => node.Content);
+		}
+
 		void RunStep() {
-			switch (step) {
+			switch (Step) {
 				case GenerationStep.Initialize:
 					template.SetRandom(rand);
 					template.Initialize();
@@ -68,7 +74,7 @@ namespace DungeonGenerator {
 					break;
 				case GenerationStep.TargetGeneration:
 					if (!GenerateTargetPath())
-						step = GenerationStep.Initialize;
+						Step = GenerationStep.Initialize;
 					break;
 			}
 		}
