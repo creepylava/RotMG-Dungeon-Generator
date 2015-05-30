@@ -27,19 +27,18 @@ namespace DungeonGenerator.Templates.PirateCave {
 		public override int MaxDepth { get { return 10; } }
 
 		NormDist targetDepth;
-
-		public override NormDist TargetDepth {
-			get { return targetDepth ?? (targetDepth = new NormDist(2, 5, 3, 7, Rand.Next())); }
-		}
+		public override NormDist TargetDepth { get { return targetDepth; } }
 
 		public override NormDist SpecialRmCount { get { return null; } }
 
 		public override NormDist SpecialRmDepthDist { get { return null; } }
 
-		NormDist rmSeparation;
+		public override Range RoomSeparation { get { return new Range(3, 7); } }
 
-		public override NormDist RoomSeparation {
-			get { return rmSeparation ?? (rmSeparation = new NormDist(2, 5, 2, 7, Rand.Next())); }
+		public override int CorridorWidth { get { return 2; } }
+
+		public override void Initialize() {
+			targetDepth = new NormDist(2, 5, 3, 7, Rand.Next());
 		}
 
 		public override Room CreateStart(int depth) {

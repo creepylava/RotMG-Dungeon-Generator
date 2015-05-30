@@ -19,8 +19,150 @@
 */
 
 using System;
+using System.Collections.Generic;
+using DungeonGenerator.Dungeon;
+using DungeonGenerator.Graph;
+using DungeonGenerator.Templates;
+using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator {
-	internal class Generator {
+	public enum GenerationStep {
+		Initialize,
+		Background,
+		TargetGeneration,
+		SpecialGeneration,
+		BranchGeneration,
+		Overlay,
+		Finish
+	}
+
+	public class Generator {
+		readonly Random rand;
+		readonly DungeonTemplate template;
+		GenerationStep step;
+
+		RoomCollision collision;
+		Node rootNode;
+		List<Node> nodes;
+
+		public Generator(int seed, DungeonTemplate template) {
+			rand = new Random(seed);
+			this.template = template;
+		}
+
+		public void Generate(GenerationStep? targetStep = null) {
+			step = GenerationStep.Initialize;
+			while (step != (targetStep ?? GenerationStep.Finish)) {
+				RunStep();
+				step++;
+			}
+		}
+
+		void RunStep() {
+			switch (step) {
+				case GenerationStep.Initialize:
+					template.SetRandom(rand);
+					template.Initialize();
+					collision = new RoomCollision();
+					nodes = new List<Node>();
+					break;
+				case GenerationStep.TargetGeneration:
+					if (!GenerateTargetPath())
+						step = GenerationStep.Initialize;
+					break;
+			}
+		}
+
+		bool PlaceRoom(Room src, Room target, int connPt) {
+			var sep = template.RoomSeparation.Random(rand);
+			int x, y;
+			switch (connPt) {
+				case 0:
+				case 2:
+					// North & South
+					int minX = src.Pos.X + template.CorridorWidth - target.Width;
+					int maxX = src.Pos.X + src.Width - template.CorridorWidth;
+					x = rand.Next(minX, maxX + 1);
+
+					if (connPt == 0)
+						y = src.Pos.Y + src.Height + sep;
+					else
+						y = src.Pos.Y - sep - target.Height;
+
+					target.Pos = new Point(x, y);
+					if (collision.HitTest(target))
+						return false;
+					break;
+				case 1:
+				case 3:
+					// East & West
+					int minY = src.Pos.Y + template.CorridorWidth - target.Height;
+					int maxY = src.Pos.Y + src.Height - template.CorridorWidth;
+					y = rand.Next(minY, maxY + 1);
+
+					if (connPt == 1)
+						x = src.Pos.X + src.Width + sep;
+					else
+						x = src.Pos.X - sep - target.Width;
+
+					target.Pos = new Point(x, y);
+					if (collision.HitTest(target))
+						return false;
+					break;
+			}
+
+			collision.Add(target);
+			return true;
+		}
+
+		int GetMaxConnectionPoints(Room rm) {
+			return 4;
+		}
+
+		bool GenerateTargetPath() {
+			var targetDepth = (int)template.TargetDepth.NextValue();
+
+			var rootRm = template.CreateStart(0);
+			rootRm.Pos = new Point(0, 0);
+			collision.Add(rootRm);
+
+			rootNode = new Node(rootRm, 0);
+			nodes.Add(rootNode);
+
+			return GenerateTargetPathInternal(rootNode, 0, targetDepth);
+		}
+
+		bool GenerateTargetPathInternal(Node prev, int depth, int targetDepth) {
+			var prevRoom = prev.Content;
+			Room rm;
+			if (targetDepth == depth)
+				rm = template.CreateTarget(depth, prevRoom);
+			else
+				rm = template.CreateNormal(depth, prevRoom);
+
+			bool targetPlaced;
+			do {
+				var connPtNum = GetMaxConnectionPoints(prevRoom);
+				for (int i = 0; i < connPtNum; i++)
+					if (PlaceRoom(prevRoom, rm, i)) {
+						connPtNum = -1;
+						break;
+					}
+
+				if (connPtNum != -1)
+					return false;
+
+				var node = new Node(rm, depth);
+				Edge.Link(prev, node);
+				nodes.Add(node);
+
+				if (targetDepth == depth)
+					targetPlaced = true;
+				else
+					targetPlaced = GenerateTargetPathInternal(node, depth + 1, targetDepth);
+			} while (!targetPlaced);
+
+			return true;
+		}
 	}
 }

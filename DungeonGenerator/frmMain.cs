@@ -26,5 +26,17 @@ namespace DungeonGenerator {
 		public frmMain() {
 			InitializeComponent();
 		}
+
+		void frmMain_Load(object sender, EventArgs e) {
+			foreach (var value in Enum.GetValues(typeof(GenerationStep))) {
+				var btn = new Button { Text = value.ToString(), Tag = value, AutoSize = true };
+				btn.Click += Step_Click;
+				stepsPane.Controls.Add(btn);
+			}
+			stepsPane.Enabled = false;
+		}
+
+		void Step_Click(object sender, EventArgs e) {
+		}
 	}
 }

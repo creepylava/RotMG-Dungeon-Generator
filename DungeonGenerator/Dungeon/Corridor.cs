@@ -21,15 +21,6 @@
 using System;
 
 namespace DungeonGenerator.Dungeon {
-	public enum CorridorType {
-		North,
-		East,
-		South,
-		West
-	}
-
 	public abstract class Corridor {
-		public abstract CorridorType Type { get; }
-		public abstract int Width { get; }
 	}
 }

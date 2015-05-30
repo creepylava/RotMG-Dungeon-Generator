@@ -36,7 +36,11 @@ namespace DungeonGenerator.Templates {
 		public abstract NormDist SpecialRmCount { get; }
 		public abstract NormDist SpecialRmDepthDist { get; }
 
-		public abstract NormDist RoomSeparation { get; }
+		public abstract int CorridorWidth { get; }
+		public abstract Range RoomSeparation { get; }
+
+		public virtual void Initialize() {
+		}
 
 		public abstract Room CreateStart(int depth);
 		public abstract Room CreateTarget(int depth, Room prev);

@@ -24,7 +24,13 @@ using DungeonGenerator.Dungeon;
 
 namespace DungeonGenerator.Graph {
 	internal class Node {
-		public Room Content { get; set; }
+		public Node(Room rm, int depth) {
+			Content = rm;
+			Depth = depth;
+		}
+
+		public Room Content { get; private set; }
+		public int Depth { get; private set; }
 		public IList<Edge> Edges { get; private set; }
 
 		public Node() {

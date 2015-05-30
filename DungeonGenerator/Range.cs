@@ -31,5 +31,9 @@ namespace DungeonGenerator {
 			Begin = begin;
 			End = end;
 		}
+
+		public int Random(Random rand) {
+			return rand.Next(Begin, End + 1);
+		}
 	}
 }
