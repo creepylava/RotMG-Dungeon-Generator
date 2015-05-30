@@ -20,6 +20,7 @@
 
 using System;
 using DungeonGenerator.Dungeon;
+using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates.PirateCave {
 	public class NormalRoom : Room {
@@ -36,5 +37,11 @@ namespace DungeonGenerator.Templates.PirateCave {
 		public override int Width { get { return w; } }
 
 		public override int Height { get { return h; } }
+
+		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer) {
+			rasterizer.FillRect(Bounds, new DungeonTile {
+				TileType = PirateCaveTemplate.BrownLines
+			});
+		}
 	}
 }

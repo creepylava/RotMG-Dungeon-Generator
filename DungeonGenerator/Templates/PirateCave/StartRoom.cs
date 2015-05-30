@@ -20,6 +20,7 @@
 
 using System;
 using DungeonGenerator.Dungeon;
+using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates.PirateCave {
 	public class StartRoom : Room {
@@ -31,8 +32,26 @@ namespace DungeonGenerator.Templates.PirateCave {
 
 		public override RoomType Type { get { return RoomType.Start; } }
 
-		public override int Width { get { return radius + 2; } }
+		public override int Width { get { return radius * 2 + 1; } }
 
-		public override int Height { get { return radius + 2; } }
+		public override int Height { get { return radius * 2 + 1; } }
+
+		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer) {
+			var tile = new DungeonTile {
+				TileType = PirateCaveTemplate.LightSand
+			};
+
+			var cX = Pos.X + radius;
+			var cY = Pos.Y + radius;
+			var bounds = Bounds;
+			var r2 = radius * radius;
+			var buf = rasterizer.Bitmap;
+
+			for (int x = bounds.X; x <= bounds.MaxX; x++)
+				for (int y = bounds.Y; y <= bounds.MaxY; y++) {
+					if ((x - cX) * (x - cX) + (y - cY) * (y - cY) <= r2)
+						buf[x, y] = tile;
+				}
+		}
 	}
 }
