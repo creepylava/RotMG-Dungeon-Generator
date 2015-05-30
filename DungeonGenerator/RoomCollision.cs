@@ -19,41 +19,69 @@
 */
 
 using System;
+using System.Collections.Generic;
 using DungeonGenerator.Dungeon;
 using RotMG.Common;
+using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator {
 	public class RoomCollision {
-		const int GridSize = 10;
-		readonly SpatialStorage<Room> storage = new SpatialStorage<Room>(new SpatialNodePool<Room>());
+		const int GridScale = 3;
+		const int GridSize = 1 << GridScale;
+
+		struct RoomKey {
+			public readonly int XKey;
+			public readonly int YKey;
+
+			public RoomKey(int x, int y) {
+				XKey = x >> GridScale;
+				YKey = y >> GridScale;
+			}
+
+			public override int GetHashCode() {
+				return XKey * 7 + YKey;
+			}
+		}
+
+		readonly Dictionary<RoomKey, HashSet<Room>> rooms = new Dictionary<RoomKey, HashSet<Room>>();
+
+		void Add(int x, int y, Room rm) {
+			var key = new RoomKey(x, y);
+			var roomList = rooms.GetValueOrCreate(key, k => new HashSet<Room>());
+			roomList.Add(rm);
+		}
 
 		public void Add(Room rm) {
 			var bounds = rm.Bounds;
 			int x = bounds.X, y = bounds.Y;
-			for (; y < bounds.MaxY; y += GridSize) {
-				for (x = bounds.X; x < bounds.MaxX; x += GridSize)
-					storage.New(rm, x / GridSize, y / GridSize);
-				storage.New(rm, x / GridSize, y / GridSize);
+			for (; y <= bounds.MaxY + GridSize; y += GridSize) {
+				for (x = bounds.X; x <= bounds.MaxX + 20; x += GridSize)
+					Add(x, y, rm);
 			}
-			storage.New(rm, x / GridSize, y / GridSize);
+		}
+
+		bool HitTest(int x, int y, Rect bounds) {
+			var key = new RoomKey(x, y);
+			var roomList = rooms.GetValueOrDefault(key, (HashSet<Room>)null);
+			if (roomList != null) {
+				foreach (var room in roomList)
+					if (!room.Bounds.Intersection(bounds).IsEmpty)
+						return true;
+			}
+			return false;
 		}
 
 		public bool HitTest(Room rm) {
 			var bounds = rm.Bounds;
-			bool hit = false;
-			Action<SpatialNode<Room>> check = node => {
-				if (!node.Item.Bounds.Intersection(bounds).IsEmpty)
-					hit = true;
-			};
 
 			int x = bounds.X, y = bounds.Y;
-			for (; y < bounds.MaxY && !hit; y += GridSize) {
-				for (x = bounds.X; x < bounds.MaxX && !hit; x += GridSize)
-					storage.HitTest(x / GridSize, y / GridSize, check);
-				storage.HitTest(x / GridSize, y / GridSize, check);
+			for (; y <= bounds.MaxY + GridSize; y += GridSize) {
+				for (x = bounds.X; x <= bounds.MaxX + GridSize; x += GridSize) {
+					if (HitTest(x, y, bounds))
+						return true;
+				}
 			}
-			storage.HitTest(x / GridSize, y / GridSize, check);
-			return hit;
+			return false;
 		}
 	}
 }

@@ -27,15 +27,12 @@ namespace DungeonGenerator.Graph {
 		public Node(Room rm, int depth) {
 			Content = rm;
 			Depth = depth;
+			Edges = new List<Edge>(4);
 		}
 
 		public Room Content { get; private set; }
 		public int Depth { get; private set; }
 		public IList<Edge> Edges { get; private set; }
-
-		public Node() {
-			Edges = new List<Edge>(4);
-		}
 
 		public IEnumerable<Node> GetNeighbors() {
 			foreach (var edge in Edges) {

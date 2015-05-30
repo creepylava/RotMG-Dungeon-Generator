@@ -51,15 +51,17 @@ namespace DungeonGenerator {
 		void Step_Click(object sender, EventArgs e) {
 			var step = (GenerationStep)((Button)sender).Tag;
 			gen.Generate(step + 1);
-			if (cbBorder.Checked)
-				Render();
-			else
-				RenderBorder();
+			Render();
 			foreach (var btn in btns)
 				btn.Enabled = (GenerationStep)btn.Tag >= gen.Step;
 		}
 
 		void Render() {
+			if (cbBorder.Checked) {
+				RenderBorder();
+				return;
+			}
+
 			var rms = gen.GetRooms().ToList();
 			int dx = int.MaxValue, dy = int.MaxValue;
 			int mx = int.MinValue, my = int.MinValue;
@@ -141,6 +143,8 @@ namespace DungeonGenerator {
 						rmPen.Dispose();
 				}
 
+			pen.Dispose();
+
 			var original = box.Image;
 			box.Image = bmp;
 			if (original != null)
@@ -168,12 +172,8 @@ namespace DungeonGenerator {
 		}
 
 		void cbBorder_CheckedChanged(object sender, EventArgs e) {
-			if (stepsPane.Enabled) {
-				if (cbBorder.Checked)
-					Render();
-				else
-					RenderBorder();
-			}
+			if (stepsPane.Enabled)
+				Render();
 		}
 	}
 }

@@ -24,6 +24,7 @@ using System.Linq;
 using DungeonGenerator.Dungeon;
 using DungeonGenerator.Graph;
 using DungeonGenerator.Templates;
+using RotMG.Common;
 using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator {
@@ -56,7 +57,6 @@ namespace DungeonGenerator {
 			Step = GenerationStep.Initialize;
 			while (Step != targetStep && Step != GenerationStep.Finish) {
 				RunStep();
-				Step++;
 			}
 		}
 
@@ -70,13 +70,17 @@ namespace DungeonGenerator {
 					template.SetRandom(rand);
 					template.Initialize();
 					collision = new RoomCollision();
+					rootNode = null;
 					nodes = new List<Node>();
 					break;
 				case GenerationStep.TargetGeneration:
-					if (!GenerateTargetPath())
+					if (!GenerateTargetPath()) {
 						Step = GenerationStep.Initialize;
+						return;
+					}
 					break;
 			}
+			Step++;
 		}
 
 		bool PlaceRoom(Room src, Room target, int connPt) {
@@ -99,6 +103,7 @@ namespace DungeonGenerator {
 					if (collision.HitTest(target))
 						return false;
 					break;
+
 				case 1:
 				case 3:
 					// East & West
@@ -140,22 +145,28 @@ namespace DungeonGenerator {
 
 		bool GenerateTargetPathInternal(Node prev, int depth, int targetDepth) {
 			var prevRoom = prev.Content;
-			Room rm;
-			if (targetDepth == depth)
-				rm = template.CreateTarget(depth, prevRoom);
-			else
-				rm = template.CreateNormal(depth, prevRoom);
+
+			var connPtNum = GetMaxConnectionPoints(prevRoom);
+			var seq = Enumerable.Range(0, connPtNum).ToList();
+			rand.Shuffle(seq);
 
 			bool targetPlaced;
 			do {
-				var connPtNum = GetMaxConnectionPoints(prevRoom);
-				for (int i = 0; i < connPtNum; i++)
-					if (PlaceRoom(prevRoom, rm, i)) {
-						connPtNum = -1;
+				Room rm;
+				if (targetDepth == depth)
+					rm = template.CreateTarget(depth, prevRoom);
+				else
+					rm = template.CreateNormal(depth, prevRoom);
+
+				bool connected = false;
+				foreach (var connPt in seq)
+					if (PlaceRoom(prevRoom, rm, connPt)) {
+						seq.Remove(connPt);
+						connected = true;
 						break;
 					}
 
-				if (connPtNum != -1)
+				if (!connected)
 					return false;
 
 				var node = new Node(rm, depth);

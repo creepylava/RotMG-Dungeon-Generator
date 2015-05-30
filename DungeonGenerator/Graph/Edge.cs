@@ -37,6 +37,8 @@ namespace DungeonGenerator.Graph {
 				NodeA = a,
 				NodeB = b
 			};
+			a.Edges.Add(edge);
+			b.Edges.Add(edge);
 		}
 	}
 }
