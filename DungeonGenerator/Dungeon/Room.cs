@@ -30,6 +30,8 @@ namespace DungeonGenerator.Dungeon {
 	}
 
 	public abstract class Room {
+		public int Depth { get; internal set; }
+
 		public abstract RoomType Type { get; }
 		public abstract int Width { get; }
 		public abstract int Height { get; }

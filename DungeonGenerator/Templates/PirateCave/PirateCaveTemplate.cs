@@ -38,7 +38,7 @@ namespace DungeonGenerator.Templates.PirateCave {
 		public override int CorridorWidth { get { return 2; } }
 
 		public override void Initialize() {
-			targetDepth = new NormDist(2, 5, 3, 7, Rand.Next());
+			targetDepth = new NormDist(1, 5.5f, 4, 7, Rand.Next());
 		}
 
 		public override Room CreateStart(int depth) {

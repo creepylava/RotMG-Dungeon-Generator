@@ -30,11 +30,16 @@ using RotMG.Common.Rasterizer;
 namespace DungeonGenerator {
 	public enum GenerationStep {
 		Initialize,
-		Background,
+
 		TargetGeneration,
 		SpecialGeneration,
 		BranchGeneration,
+
+		Background,
+		Corridors,
+		Rooms,
 		Overlay,
+
 		Finish
 	}
 
@@ -45,16 +50,18 @@ namespace DungeonGenerator {
 		RoomCollision collision;
 		Node rootNode;
 		List<Node> nodes;
+		int maxDepth;
+		int maxNodeNum;
 
 		public GenerationStep Step { get; set; }
 
 		public Generator(int seed, DungeonTemplate template) {
 			rand = new Random(seed);
 			this.template = template;
+			Step = GenerationStep.Initialize;
 		}
 
 		public void Generate(GenerationStep? targetStep = null) {
-			Step = GenerationStep.Initialize;
 			while (Step != targetStep && Step != GenerationStep.Finish) {
 				RunStep();
 			}
@@ -73,11 +80,16 @@ namespace DungeonGenerator {
 					rootNode = null;
 					nodes = new List<Node>();
 					break;
+
 				case GenerationStep.TargetGeneration:
-					if (!GenerateTargetPath()) {
+					if (!GenerateTarget()) {
 						Step = GenerationStep.Initialize;
 						return;
 					}
+					break;
+
+				case GenerationStep.BranchGeneration:
+					GenerateBranches();
 					break;
 			}
 			Step++;
@@ -130,7 +142,7 @@ namespace DungeonGenerator {
 			return 4;
 		}
 
-		bool GenerateTargetPath() {
+		bool GenerateTarget() {
 			var targetDepth = (int)template.TargetDepth.NextValue();
 
 			var rootRm = template.CreateStart(0);
@@ -140,10 +152,15 @@ namespace DungeonGenerator {
 			rootNode = new Node(rootRm, 0);
 			nodes.Add(rootNode);
 
-			return GenerateTargetPathInternal(rootNode, 0, targetDepth);
+			if (GenerateTargetInternal(rootNode, 1, targetDepth)) {
+				maxNodeNum = nodes.Count * 3;
+				maxDepth = nodes.Count;
+				return true;
+			}
+			return false;
 		}
 
-		bool GenerateTargetPathInternal(Node prev, int depth, int targetDepth) {
+		bool GenerateTargetInternal(Node prev, int depth, int targetDepth) {
 			var prevRoom = prev.Content;
 
 			var connPtNum = GetMaxConnectionPoints(prevRoom);
@@ -176,10 +193,76 @@ namespace DungeonGenerator {
 				if (targetDepth == depth)
 					targetPlaced = true;
 				else
-					targetPlaced = GenerateTargetPathInternal(node, depth + 1, targetDepth);
+					targetPlaced = GenerateTargetInternal(node, depth + 1, targetDepth);
 			} while (!targetPlaced);
 
 			return true;
+		}
+
+		void GenerateBranches() {
+			var targetPathNodes = nodes.ToList();
+			rand.Shuffle(targetPathNodes);
+
+			foreach (var node in targetPathNodes) {
+				GenerateBranchInternal(node, node.Depth + 1, node.Content.Type == RoomType.Target ? template.MaxDepth : maxDepth);
+				if (nodes.Count >= maxNodeNum)
+					break;
+			}
+		}
+
+		void GenerateBranchInternal(Node prev, int depth, int maxDepth) {
+			if (depth >= maxDepth)
+				return;
+
+			if (nodes.Count >= maxNodeNum)
+				return;
+
+			var prevRoom = prev.Content;
+
+			var connPtNum = GetMaxConnectionPoints(prevRoom);
+			var seq = Enumerable.Range(0, connPtNum).ToList();
+			rand.Shuffle(seq);
+
+			int numBranch = rand.Next(8);
+			switch (numBranch) {
+				case 0:
+				case 1:
+					numBranch = 1;
+					break;
+				case 2:
+				case 3:
+				case 4:
+					numBranch = 2;
+					break;
+				case 5:
+				case 6:
+					numBranch = 3;
+					break;
+				case 7:
+					numBranch = 4;
+					break;
+			}
+			numBranch -= prev.Edges.Count;
+			for (int i = 0; i < numBranch; i++) {
+				var rm = template.CreateNormal(depth, prevRoom);
+
+				bool connected = false;
+				foreach (var connPt in seq)
+					if (PlaceRoom(prevRoom, rm, connPt)) {
+						seq.Remove(connPt);
+						connected = true;
+						break;
+					}
+
+				if (!connected)
+					return;
+
+				var node = new Node(rm, depth);
+				Edge.Link(prev, node);
+				nodes.Add(node);
+
+				GenerateBranchInternal(node, depth + 1, maxDepth);
+			}
 		}
 	}
 }

@@ -26,6 +26,7 @@ namespace DungeonGenerator.Graph {
 	internal class Node {
 		public Node(Room rm, int depth) {
 			Content = rm;
+			rm.Depth = depth;
 			Depth = depth;
 			Edges = new List<Edge>(4);
 		}

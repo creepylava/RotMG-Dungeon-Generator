@@ -92,9 +92,10 @@ namespace DungeonGenerator {
 					else if (rm.Type == RoomType.Special)
 						brush = Brushes.Blue;
 
-					g.FillRectangle(brush,
-						(rm.Pos.X - dx) * Factor + 2 * Factor, (rm.Pos.Y - dy) * Factor + 2 * Factor,
-						rm.Width * Factor, rm.Height * Factor);
+					var x = (rm.Pos.X - dx) * Factor + 2 * Factor;
+					var y = (rm.Pos.Y - dy) * Factor + 2 * Factor;
+					g.FillRectangle(brush, x, y, rm.Width * Factor, rm.Height * Factor);
+					g.DrawString(rm.Depth.ToString(), Font, Brushes.White, x, y);
 				}
 
 			var original = box.Image;
@@ -135,9 +136,10 @@ namespace DungeonGenerator {
 					else if (rm.Type == RoomType.Special)
 						rmPen = new Pen(Color.Blue, Factor / 2);
 
-					g.DrawRectangle(rmPen,
-						(rm.Pos.X - dx) * Factor + 2 * Factor, (rm.Pos.Y - dy) * Factor + 2 * Factor,
-						rm.Width * Factor, rm.Height * Factor);
+					var x = (rm.Pos.X - dx) * Factor + 2 * Factor;
+					var y = (rm.Pos.Y - dy) * Factor + 2 * Factor;
+					g.DrawRectangle(rmPen, x, y, rm.Width * Factor, rm.Height * Factor);
+					g.DrawString(rm.Depth.ToString(), Font, Brushes.White, x, y);
 
 					if (rmPen != pen)
 						rmPen.Dispose();
