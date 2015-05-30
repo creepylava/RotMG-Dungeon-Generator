@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (C) 2014 creepylava
+    Copyright (C) 2015 creepylava
 
     This file is part of RotMG Dungeon Generator.
 
@@ -15,16 +15,16 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 */
 
+using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("RotMG Dungeon Generator")]
 [assembly: AssemblyProduct("RotMG Dungeon Generator")]
 [assembly: AssemblyCopyright("Copyright (C) creepylava 2015")]
 [assembly: ComVisible(false)]
-
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
