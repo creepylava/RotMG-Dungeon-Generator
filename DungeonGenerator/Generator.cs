@@ -35,11 +35,6 @@ namespace DungeonGenerator {
 		SpecialGeneration,
 		BranchGeneration,
 
-		Background,
-		Corridors,
-		Rooms,
-		Overlay,
-
 		Finish
 	}
 
@@ -263,6 +258,12 @@ namespace DungeonGenerator {
 
 				GenerateBranchInternal(node, depth + 1, maxDepth);
 			}
+		}
+
+		public DungeonGraph ExportGraph() {
+			if (Step != GenerationStep.Finish)
+				throw new InvalidOperationException();
+			return new DungeonGraph(template, nodes.ToArray());
 		}
 	}
 }

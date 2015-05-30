@@ -20,14 +20,12 @@
 
 using System;
 using System.Diagnostics;
-using DungeonGenerator.Dungeon;
 
 namespace DungeonGenerator.Graph {
 	internal class Edge {
 		Edge() {
 		}
 
-		public Corridor Content { get; set; }
 		public Node NodeA { get; private set; }
 		public Node NodeB { get; private set; }
 

@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dungeon\Corridor.cs" />
+    <Compile Include="Dungeon\DungeonMap.cs" />
     <Compile Include="Dungeon\Room.cs" />
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
