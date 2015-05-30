@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using System.Windows.Forms;
 using DungeonGenerator.Dungeon;
@@ -34,7 +35,9 @@ namespace DungeonGenerator {
 
 		readonly Random rand = new Random();
 		readonly List<Button> btns = new List<Button>();
+		int seed;
 		Generator gen;
+		Rasterizer ras;
 
 		void frmMain_Load(object sender, EventArgs e) {
 			foreach (var value in Enum.GetValues(typeof(GenerationStep))) {
@@ -45,20 +48,47 @@ namespace DungeonGenerator {
 				stepsPane.Controls.Add(btn);
 				btns.Add(btn);
 			}
+			foreach (var value in Enum.GetValues(typeof(RasterizationStep))) {
+				if ((RasterizationStep)value == RasterizationStep.Finish)
+					continue;
+				var btn = new Button { Text = value.ToString(), Tag = value, AutoSize = true };
+				btn.Click += Step_Click;
+				stepsPane.Controls.Add(btn);
+				btns.Add(btn);
+			}
 			stepsPane.Enabled = false;
 		}
 
 		void Step_Click(object sender, EventArgs e) {
-			var step = (GenerationStep)((Button)sender).Tag;
-			gen.Generate(step + 1);
+			if (((Button)sender).Tag is GenerationStep) {
+				var step = (GenerationStep)((Button)sender).Tag;
+				gen.Generate(step + 1);
+			}
+			else {
+				gen.Generate();
+				if (ras == null)
+					ras = new Rasterizer(seed, gen.ExportGraph());
+
+				var step = (RasterizationStep)((Button)sender).Tag;
+				ras.Rasterize(step + 1);
+			}
+
 			Render();
-			foreach (var btn in btns)
-				btn.Enabled = (GenerationStep)btn.Tag >= gen.Step;
+			foreach (var btn in btns) {
+				if (btn.Tag is GenerationStep)
+					btn.Enabled = (GenerationStep)btn.Tag >= gen.Step;
+				else
+					btn.Enabled = ras == null || (RasterizationStep)btn.Tag >= ras.Step;
+			}
 		}
 
 		void Render() {
 			if (cbBorder.Checked) {
 				RenderBorder();
+				return;
+			}
+			if (ras != null) {
+				RenderRaster();
 				return;
 			}
 
@@ -82,7 +112,8 @@ namespace DungeonGenerator {
 			const int Factor = 4;
 
 			var bmp = new Bitmap((mx - dx + 4) * Factor, (my - dy + 4) * Factor);
-			using (var g = Graphics.FromImage(bmp))
+			using (var g = Graphics.FromImage(bmp)) {
+				g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
 				foreach (var rm in rms) {
 					var brush = Brushes.Black;
 					if (rm.Type == RoomType.Start)
@@ -97,6 +128,7 @@ namespace DungeonGenerator {
 					g.FillRectangle(brush, x, y, rm.Width * Factor, rm.Height * Factor);
 					g.DrawString(rm.Depth.ToString(), Font, Brushes.White, x, y);
 				}
+			}
 
 			var original = box.Image;
 			box.Image = bmp;
@@ -126,7 +158,8 @@ namespace DungeonGenerator {
 
 			var pen = new Pen(Color.Black, Factor / 2);
 			var bmp = new Bitmap((mx - dx + 4) * Factor, (my - dy + 4) * Factor);
-			using (var g = Graphics.FromImage(bmp))
+			using (var g = Graphics.FromImage(bmp)) {
+				g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
 				foreach (var rm in rms) {
 					var rmPen = pen;
 					if (rm.Type == RoomType.Start)
@@ -139,13 +172,30 @@ namespace DungeonGenerator {
 					var x = (rm.Pos.X - dx) * Factor + 2 * Factor;
 					var y = (rm.Pos.Y - dy) * Factor + 2 * Factor;
 					g.DrawRectangle(rmPen, x, y, rm.Width * Factor, rm.Height * Factor);
-					g.DrawString(rm.Depth.ToString(), Font, Brushes.White, x, y);
+					g.DrawString(rm.Depth.ToString(), Font, Brushes.Black, x, y);
 
 					if (rmPen != pen)
 						rmPen.Dispose();
 				}
+			}
 
 			pen.Dispose();
+
+			var original = box.Image;
+			box.Image = bmp;
+			if (original != null)
+				original.Dispose();
+		}
+
+		void RenderRaster() {
+			var map = ras.ExportMap();
+			var bmp = new Bitmap(map.GetUpperBound(0), map.GetUpperBound(1));
+
+			for (int y = 0; y < bmp.Height; y++)
+				for (int x = 0; x < bmp.Width; x++) {
+					if (map[x, y].TileType != 0xfe)
+						bmp.SetPixel(x, y, Color.Black);
+				}
 
 			var original = box.Image;
 			box.Image = bmp;
@@ -159,8 +209,9 @@ namespace DungeonGenerator {
 		}
 
 		void btnNewStep_Click(object sender, EventArgs e) {
-			var seed = rand.Next();
+			seed = rand.Next();
 			gen = new Generator(seed, new PirateCaveTemplate());
+			ras = null;
 			Text = ProductName + " [Seed: " + seed + "]";
 
 			stepsPane.Enabled = true;

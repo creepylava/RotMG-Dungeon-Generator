@@ -24,12 +24,7 @@ using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates {
 	public class MapBackground {
-		const uint Space = 0xfe;
-
 		public virtual void Rasterize(BitmapRasterizer<MapTile> rasterizer) {
-			rasterizer.FillRect(new Rect(0, 0, rasterizer.Width, rasterizer.Height), new MapTile {
-				TileType = Space
-			});
 		}
 	}
 }

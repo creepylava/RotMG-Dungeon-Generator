@@ -47,7 +47,7 @@ namespace DungeonGenerator.Templates {
 		public abstract Room CreateSpecial(int depth, Room prev);
 		public abstract Room CreateNormal(int depth, Room prev);
 
-		public virtual void InitializeRasterization() {
+		public virtual void InitializeRasterization(DungeonGraph graph) {
 		}
 
 		public virtual MapBackground CreateBackground() {

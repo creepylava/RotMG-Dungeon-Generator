@@ -20,6 +20,8 @@
 
 using System;
 using DungeonGenerator.Dungeon;
+using RotMG.Common.BMap;
+using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator {
 	public enum RasterizationStep {
@@ -36,16 +38,20 @@ namespace DungeonGenerator {
 	internal class Rasterizer {
 		readonly Random rand;
 		readonly DungeonGraph graph;
+		readonly BitmapRasterizer<MapTile> rasterizer;
+
+		const uint Space = 0xfe;
 
 		public RasterizationStep Step { get; set; }
 
 		public Rasterizer(int seed, DungeonGraph graph) {
 			rand = new Random(seed);
 			this.graph = graph;
+			rasterizer = new BitmapRasterizer<MapTile>(graph.Width, graph.Height);
 			Step = RasterizationStep.Initialize;
 		}
 
-		public void Generate(RasterizationStep? targetStep = null) {
+		public void Rasterize(RasterizationStep? targetStep = null) {
 			while (Step != targetStep && Step != RasterizationStep.Finish) {
 				RunStep();
 			}
@@ -54,9 +60,25 @@ namespace DungeonGenerator {
 		void RunStep() {
 			switch (Step) {
 				case RasterizationStep.Initialize:
+					rasterizer.Clear(new MapTile {
+						TileType = Space
+					});
+					graph.Template.InitializeRasterization(graph);
+					break;
+
+				case RasterizationStep.Background:
+					graph.Template.CreateBackground().Rasterize(rasterizer);
+					break;
+
+				case RasterizationStep.Overlay:
+					graph.Template.CreateOverlay().Rasterize(rasterizer);
 					break;
 			}
 			Step++;
+		}
+
+		public MapTile[,] ExportMap() {
+			return rasterizer.Bitmap;
 		}
 	}
 }
