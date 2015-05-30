@@ -41,14 +41,14 @@ namespace DungeonGenerator.Templates.PirateCave {
 				TileType = PirateCaveTemplate.BrownLines
 			};
 
-			var cX = Pos.X + radius;
-			var cY = Pos.Y + radius;
+			var cX = Pos.X + radius + 0.5;
+			var cY = Pos.Y + radius + 0.5;
 			var bounds = Bounds;
 			var r2 = radius * radius;
 			var buf = rasterizer.Bitmap;
 
-			for (int x = bounds.X; x <= bounds.MaxX; x++)
-				for (int y = bounds.Y; y <= bounds.MaxY; y++) {
+			for (int x = bounds.X; x < bounds.MaxX; x++)
+				for (int y = bounds.Y; y < bounds.MaxY; y++) {
 					if ((x - cX) * (x - cX) + (y - cY) * (y - cY) <= r2)
 						buf[x, y] = tile;
 				}

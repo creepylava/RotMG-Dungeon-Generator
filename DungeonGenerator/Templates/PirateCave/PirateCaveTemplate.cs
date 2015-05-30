@@ -48,11 +48,11 @@ namespace DungeonGenerator.Templates.PirateCave {
 		}
 
 		public override Room CreateStart(int depth) {
-			return new StartRoom(Rand.Next(8, 15));
+			return new StartRoom(10);
 		}
 
 		public override Room CreateTarget(int depth, Room prev) {
-			return new BossRoom(Rand.Next(8, 15));
+			return new BossRoom(10);
 		}
 
 		public override Room CreateSpecial(int depth, Room prev) {
