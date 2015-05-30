@@ -29,13 +29,13 @@ using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator {
 	public enum GenerationStep {
-		Initialize,
+		Initialize = 0,
 
-		TargetGeneration,
-		SpecialGeneration,
-		BranchGeneration,
+		TargetGeneration = 1,
+		SpecialGeneration = 2,
+		BranchGeneration = 3,
 
-		Finish
+		Finish = 4
 	}
 
 	public class Generator {
