@@ -72,7 +72,7 @@ namespace DungeonGenerator {
 		}
 
 		public bool HitTest(Room rm) {
-			var bounds = rm.Bounds;
+			var bounds = new Rect(rm.Bounds.X - 1, rm.Bounds.Y - 1, rm.Bounds.MaxX + 1, rm.Bounds.MaxY + 1);
 
 			int x = bounds.X, y = bounds.Y;
 			for (; y <= bounds.MaxY + GridSize; y += GridSize) {
