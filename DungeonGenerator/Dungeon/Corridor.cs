@@ -28,7 +28,7 @@ namespace DungeonGenerator.Dungeon {
 		West
 	}
 
-	public class Corridor {
+	public abstract class Corridor {
 		public abstract CorridorType Type { get; }
 		public abstract int Width { get; }
 	}

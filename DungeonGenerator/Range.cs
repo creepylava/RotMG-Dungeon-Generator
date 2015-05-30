@@ -19,23 +19,17 @@
 */
 
 using System;
-using RotMG.Common.Rasterizer;
 
-namespace DungeonGenerator.Dungeon {
-	public enum RoomType {
-		Normal,
-		Start,
-		Target,
-		Special
-	}
+namespace DungeonGenerator {
+	public struct Range {
+		public static readonly Range Zero = new Range(0, 0);
 
-	public abstract class Room {
-		public abstract RoomType Type { get; }
-		public abstract int Width { get; }
-		public abstract int Height { get; }
+		public readonly int Begin;
+		public readonly int End;
 
-		public Point Pos { get; set; }
-
-		public Rect Bounds { get { return new Rect(Pos.X, Pos.Y, Pos.X + Width, Pos.Y + Height); } }
+		public Range(int begin, int end) {
+			Begin = begin;
+			End = end;
+		}
 	}
 }

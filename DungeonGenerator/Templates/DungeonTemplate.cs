@@ -19,23 +19,28 @@
 */
 
 using System;
-using RotMG.Common.Rasterizer;
+using DungeonGenerator.Dungeon;
+using RotMG.Common;
 
-namespace DungeonGenerator.Dungeon {
-	public enum RoomType {
-		Normal,
-		Start,
-		Target,
-		Special
-	}
+namespace DungeonGenerator.Templates {
+	public abstract class DungeonTemplate {
+		protected Random Rand { get; private set; }
 
-	public abstract class Room {
-		public abstract RoomType Type { get; }
-		public abstract int Width { get; }
-		public abstract int Height { get; }
+		internal void SetRandom(Random rand) {
+			Rand = rand;
+		}
 
-		public Point Pos { get; set; }
+		public abstract int MaxDepth { get; }
+		public abstract NormDist TargetDepth { get; }
 
-		public Rect Bounds { get { return new Rect(Pos.X, Pos.Y, Pos.X + Width, Pos.Y + Height); } }
+		public abstract NormDist SpecialRmCount { get; }
+		public abstract NormDist SpecialRmDepthDist { get; }
+
+		public abstract NormDist RoomSeparation { get; }
+
+		public abstract Room CreateStart(int depth);
+		public abstract Room CreateTarget(int depth, Room prev);
+		public abstract Room CreateSpecial(int depth, Room prev);
+		public abstract Room CreateNormal(int depth, Room prev);
 	}
 }

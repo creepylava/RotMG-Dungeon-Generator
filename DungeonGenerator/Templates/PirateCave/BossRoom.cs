@@ -19,23 +19,20 @@
 */
 
 using System;
-using RotMG.Common.Rasterizer;
+using DungeonGenerator.Dungeon;
 
-namespace DungeonGenerator.Dungeon {
-	public enum RoomType {
-		Normal,
-		Start,
-		Target,
-		Special
-	}
+namespace DungeonGenerator.Templates.PirateCave {
+	public class BossRoom : Room {
+		readonly int radius;
 
-	public abstract class Room {
-		public abstract RoomType Type { get; }
-		public abstract int Width { get; }
-		public abstract int Height { get; }
+		public BossRoom(int radius) {
+			this.radius = radius;
+		}
 
-		public Point Pos { get; set; }
+		public override RoomType Type { get { return RoomType.Target; } }
 
-		public Rect Bounds { get { return new Rect(Pos.X, Pos.Y, Pos.X + Width, Pos.Y + Height); } }
+		public override int Width { get { return radius + 2; } }
+
+		public override int Height { get { return radius + 2; } }
 	}
 }
