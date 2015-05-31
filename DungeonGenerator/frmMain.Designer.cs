@@ -42,6 +42,7 @@
 			this.box.TabIndex = 0;
 			this.box.TabStop = false;
 			this.box.DoubleClick += new System.EventHandler(this.box_DoubleClick);
+			this.box.MouseClick += new System.Windows.Forms.MouseEventHandler(this.box_MouseClick);
 			// 
 			// panel1
 			// 
