@@ -82,6 +82,8 @@ namespace DungeonGenerator {
 			}
 		}
 
+		const int ScaleFactor = 4;
+
 		void Render() {
 			if (cbBorder.Checked) {
 				RenderBorder();
@@ -109,9 +111,8 @@ namespace DungeonGenerator {
 					my = bounds.MaxY;
 			}
 
-			const int Factor = 4;
 
-			var bmp = new Bitmap((mx - dx + 4) * Factor, (my - dy + 4) * Factor);
+			var bmp = new Bitmap((mx - dx + 4) * ScaleFactor, (my - dy + 4) * ScaleFactor);
 			using (var g = Graphics.FromImage(bmp)) {
 				g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
 				foreach (var rm in rms) {
@@ -123,9 +124,9 @@ namespace DungeonGenerator {
 					else if (rm.Type == RoomType.Special)
 						brush = Brushes.Blue;
 
-					var x = (rm.Pos.X - dx) * Factor + 2 * Factor;
-					var y = (rm.Pos.Y - dy) * Factor + 2 * Factor;
-					g.FillRectangle(brush, x, y, rm.Width * Factor, rm.Height * Factor);
+					var x = (rm.Pos.X - dx) * ScaleFactor + 2 * ScaleFactor;
+					var y = (rm.Pos.Y - dy) * ScaleFactor + 2 * ScaleFactor;
+					g.FillRectangle(brush, x, y, rm.Width * ScaleFactor, rm.Height * ScaleFactor);
 					g.DrawString(rm.Depth.ToString(), Font, Brushes.White, x, y);
 				}
 			}
@@ -154,24 +155,22 @@ namespace DungeonGenerator {
 					my = bounds.MaxY;
 			}
 
-			const int Factor = 4;
-
-			var pen = new Pen(Color.Black, Factor / 2);
-			var bmp = new Bitmap((mx - dx + 4) * Factor, (my - dy + 4) * Factor);
+			var pen = new Pen(Color.Black, ScaleFactor / 2);
+			var bmp = new Bitmap((mx - dx + 4) * ScaleFactor, (my - dy + 4) * ScaleFactor);
 			using (var g = Graphics.FromImage(bmp)) {
 				g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
 				foreach (var rm in rms) {
 					var rmPen = pen;
 					if (rm.Type == RoomType.Start)
-						rmPen = new Pen(Color.Red, Factor / 2);
+						rmPen = new Pen(Color.Red, ScaleFactor / 2);
 					else if (rm.Type == RoomType.Target)
-						rmPen = new Pen(Color.Green, Factor / 2);
+						rmPen = new Pen(Color.Green, ScaleFactor / 2);
 					else if (rm.Type == RoomType.Special)
-						rmPen = new Pen(Color.Blue, Factor / 2);
+						rmPen = new Pen(Color.Blue, ScaleFactor / 2);
 
-					var x = (rm.Pos.X - dx) * Factor + 2 * Factor;
-					var y = (rm.Pos.Y - dy) * Factor + 2 * Factor;
-					g.DrawRectangle(rmPen, x, y, rm.Width * Factor, rm.Height * Factor);
+					var x = (rm.Pos.X - dx) * ScaleFactor + 2 * ScaleFactor;
+					var y = (rm.Pos.Y - dy) * ScaleFactor + 2 * ScaleFactor;
+					g.DrawRectangle(rmPen, x, y, rm.Width * ScaleFactor, rm.Height * ScaleFactor);
 					g.DrawString(rm.Depth.ToString(), Font, Brushes.Black, x, y);
 
 					if (rmPen != pen)
@@ -189,14 +188,19 @@ namespace DungeonGenerator {
 
 		void RenderRaster() {
 			var map = ras.ExportMap();
-			var bmp = new Bitmap(map.GetUpperBound(0), map.GetUpperBound(1));
+			int w = map.GetUpperBound(0), h = map.GetUpperBound(1);
+			var bmp = new Bitmap(w * ScaleFactor, h * ScaleFactor);
 
-			for (int y = 0; y < bmp.Height; y++)
-				for (int x = 0; x < bmp.Width; x++) {
+			for (int x = 0; x < w; x++)
+				for (int y = 0; y < h; y++) {
 					var type = map[x, y].TileType;
 					if (type.Id != 0xfe &&
 					    type.Name != null) {
-						bmp.SetPixel(x, y, Color.FromArgb(type.Name.GetHashCode() & 0x00ffffff | (0xff << 24)));
+						for (int dx = 0; dx < ScaleFactor; dx++)
+							for (int dy = 0; dy < ScaleFactor; dy++) {
+								bmp.SetPixel(x * ScaleFactor + dx, y * ScaleFactor + dy,
+									Color.FromArgb(type.Name.GetHashCode() & 0x00ffffff | (0xff << 24)));
+							}
 					}
 				}
 
