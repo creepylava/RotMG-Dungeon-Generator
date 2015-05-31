@@ -19,41 +19,17 @@
 */
 
 using System;
+using DungeonGenerator.Dungeon;
+using RotMG.Common.Rasterizer;
 
-namespace DungeonGenerator.Dungeon {
-	public struct TileType {
-		public readonly uint Id;
-		public readonly string Name;
+namespace DungeonGenerator.Templates.PirateCave {
+	public class Background : MapBackground {
+		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer) {
+			var tile = new DungeonTile {
+				TileType = PirateCaveTemplate.ShallowWater
+			};
 
-		public TileType(uint id, string name) {
-			Id = id;
-			Name = name;
+			rasterizer.Clear(tile);
 		}
-
-		public static bool operator ==(TileType a, TileType b) {
-			return a.Id == b.Id;
-		}
-
-		public static bool operator !=(TileType a, TileType b) {
-			return a.Id != b.Id;
-		}
-
-		public override int GetHashCode() {
-			return Id.GetHashCode();
-		}
-
-		public override bool Equals(object obj) {
-			return obj is TileType && ((TileType)obj).Id == Id;
-		}
-
-		public override string ToString() {
-			return Name;
-		}
-	}
-
-	public struct DungeonTile {
-		public TileType TileType;
-		public string Region;
-		public DungeonObject Object;
 	}
 }

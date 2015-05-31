@@ -19,22 +19,24 @@
 */
 
 using System;
+using System.Collections.Generic;
+using RotMG.Common;
 
 namespace DungeonGenerator.Dungeon {
-	public struct TileType {
+	public struct ObjectType {
 		public readonly uint Id;
 		public readonly string Name;
 
-		public TileType(uint id, string name) {
+		public ObjectType(uint id, string name) {
 			Id = id;
 			Name = name;
 		}
 
-		public static bool operator ==(TileType a, TileType b) {
+		public static bool operator ==(ObjectType a, ObjectType b) {
 			return a.Id == b.Id;
 		}
 
-		public static bool operator !=(TileType a, TileType b) {
+		public static bool operator !=(ObjectType a, ObjectType b) {
 			return a.Id != b.Id;
 		}
 
@@ -43,7 +45,7 @@ namespace DungeonGenerator.Dungeon {
 		}
 
 		public override bool Equals(object obj) {
-			return obj is TileType && ((TileType)obj).Id == Id;
+			return obj is ObjectType && ((ObjectType)obj).Id == Id;
 		}
 
 		public override string ToString() {
@@ -51,9 +53,8 @@ namespace DungeonGenerator.Dungeon {
 		}
 	}
 
-	public struct DungeonTile {
-		public TileType TileType;
-		public string Region;
-		public DungeonObject Object;
+	public class DungeonObject {
+		public ObjectType ObjectType;
+		public KeyValuePair<string, string>[] Attributes = Empty<KeyValuePair<string, string>>.Array;
 	}
 }

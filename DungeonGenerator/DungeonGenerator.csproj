@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dungeon\DungeonObject.cs" />
     <Compile Include="Dungeon\DungeonGraph.cs" />
     <Compile Include="Dungeon\DungeonTile.cs" />
     <Compile Include="Dungeon\Room.cs" />
@@ -65,6 +66,8 @@
     <Compile Include="Templates\MapBackground.cs" />
     <Compile Include="Templates\MapOverlay.cs" />
     <Compile Include="Templates\PirateCave\BossRoom.cs" />
+    <Compile Include="Templates\PirateCave\Background.cs" />
+    <Compile Include="Templates\PirateCave\Overlay.cs" />
     <Compile Include="Templates\PirateCave\Corridor.cs" />
     <Compile Include="Templates\PirateCave\NormalRoom.cs" />
     <Compile Include="Templates\PirateCave\PirateCaveTemplate.cs" />

@@ -51,12 +51,12 @@ namespace DungeonGenerator.Dungeon {
 					my = bounds.MaxY;
 			}
 
-			Width = mx - dx + 4;
-			Height = my - dy + 4;
+			Width = mx - dx + 8;
+			Height = my - dy + 8;
 
 			for (int i = 0; i < rooms.Length; i++) {
 				var pos = rooms[i].Pos;
-				rooms[i].Pos = new Point(pos.X - dx + 2, pos.Y - dy + 2);
+				rooms[i].Pos = new Point(pos.X - dx + 4, pos.Y - dy + 4);
 			}
 			Rooms = rooms;
 		}

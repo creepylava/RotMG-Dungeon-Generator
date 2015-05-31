@@ -28,6 +28,7 @@ namespace DungeonGenerator.Templates.PirateCave {
 		public static readonly TileType BrownLines = new TileType(0x000c, "Brown Lines");
 		public static readonly TileType ShallowWater = new TileType(0x0073, "Shallow Water");
 		public static readonly TileType Composite = new TileType(0x00fd, "Composite");
+		public static readonly TileType Space = new TileType(0x00fe, "Space");
 
 
 		public override int MaxDepth { get { return 10; } }
@@ -65,6 +66,14 @@ namespace DungeonGenerator.Templates.PirateCave {
 
 		public override MapCorridor CreateCorridor() {
 			return new Corridor();
+		}
+
+		public override MapBackground CreateBackground() {
+			return new Background();
+		}
+
+		public override MapOverlay CreateOverlay() {
+			return new Overlay(Rand);
 		}
 	}
 }
