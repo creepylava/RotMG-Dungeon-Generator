@@ -67,7 +67,7 @@ namespace DungeonGenerator {
 					break;
 
 				case RasterizationStep.Background:
-					graph.Template.CreateBackground().Rasterize(rasterizer);
+					graph.Template.CreateBackground().Rasterize(rasterizer, rand);
 					break;
 
 				case RasterizationStep.Corridor:
@@ -79,7 +79,7 @@ namespace DungeonGenerator {
 					break;
 
 				case RasterizationStep.Overlay:
-					graph.Template.CreateOverlay().Rasterize(rasterizer);
+					graph.Template.CreateOverlay().Rasterize(rasterizer, rand);
 					break;
 			}
 			Step++;
@@ -122,12 +122,12 @@ namespace DungeonGenerator {
 		void RasterizeCorridor(MapCorridor corridor, Edge edge) {
 			Point srcPos, dstPos;
 			CreateCorridor(edge.RoomA, edge.RoomB, out srcPos, out dstPos);
-			corridor.Rasterize(rasterizer, edge.RoomA, edge.RoomB, srcPos, dstPos);
+			corridor.Rasterize(rasterizer, edge.RoomA, edge.RoomB, srcPos, dstPos, rand);
 		}
 
 		void RasterizeRooms() {
 			foreach (var room in graph.Rooms)
-				room.Rasterize(rasterizer);
+				room.Rasterize(rasterizer, rand);
 		}
 
 		public DungeonTile[,] ExportMap() {

@@ -24,7 +24,7 @@ using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates.PirateCave {
 	internal class Background : MapBackground {
-		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer) {
+		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand) {
 			var tile = new DungeonTile {
 				TileType = PirateCaveTemplate.ShallowWater
 			};

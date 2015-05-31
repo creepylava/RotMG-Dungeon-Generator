@@ -46,6 +46,6 @@ namespace DungeonGenerator.Dungeon {
 
 		public Rect Bounds { get { return new Rect(Pos.X, Pos.Y, Pos.X + Width, Pos.Y + Height); } }
 
-		public abstract void Rasterize(BitmapRasterizer<DungeonTile> rasterizer);
+		public abstract void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand);
 	}
 }

@@ -30,13 +30,11 @@ namespace DungeonGenerator.Templates.PirateCave {
 			this.rand = rand;
 		}
 
-		static readonly ObjectType CaveWall = new ObjectType(0x01ce, "Cave Wall");
-
-		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer) {
+		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand) {
 			var wall = new DungeonTile {
 				TileType = PirateCaveTemplate.Composite,
 				Object = new DungeonObject {
-					ObjectType = CaveWall
+					ObjectType = PirateCaveTemplate.CaveWall
 				}
 			};
 			var water = new DungeonTile {

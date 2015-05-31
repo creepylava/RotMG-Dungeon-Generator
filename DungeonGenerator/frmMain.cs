@@ -295,7 +295,7 @@ namespace DungeonGenerator {
 					var region = new JsonObject {
 						{ "id", tile.Region }
 					};
-					jsonTile["region"] = new JsonArray { region };
+					jsonTile["regions"] = new JsonArray { region };
 				}
 				if (tile.Object != null) {
 					var obj = new JsonObject {

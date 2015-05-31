@@ -26,7 +26,7 @@ using RotMG.Common.Rasterizer;
 namespace DungeonGenerator.Templates.PirateCave {
 	internal class Corridor : MapCorridor {
 		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Room src, Room dst, Point srcPos,
-			Point dstPos) {
+			Point dstPos, Random rand) {
 			var tile = new DungeonTile {
 				TileType = PirateCaveTemplate.BrownLines
 			};

@@ -24,7 +24,8 @@ using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates {
 	public class MapCorridor {
-		public virtual void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Room src, Room dst, Point srcPos, Point dstPos) {
+		public virtual void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Room src, Room dst, Point srcPos, Point dstPos,
+			Random rand) {
 		}
 	}
 }

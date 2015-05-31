@@ -24,7 +24,7 @@ using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates {
 	public class MapOverlay {
-		public virtual void Rasterize(BitmapRasterizer<DungeonTile> rasterizer) {
+		public virtual void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand) {
 		}
 	}
 }
