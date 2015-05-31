@@ -85,6 +85,8 @@ namespace DungeonGenerator {
 		const int ScaleFactor = 4;
 
 		void Render() {
+			if (gen.GetRooms() == null)
+				return;
 			if (cbBorder.Checked) {
 				RenderBorder();
 				return;

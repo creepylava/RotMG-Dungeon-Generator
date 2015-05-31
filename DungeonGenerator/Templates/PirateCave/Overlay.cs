@@ -23,7 +23,7 @@ using DungeonGenerator.Dungeon;
 using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates.PirateCave {
-	public class Overlay : MapOverlay {
+	internal class Overlay : MapOverlay {
 		readonly Random rand;
 
 		public Overlay(Random rand) {

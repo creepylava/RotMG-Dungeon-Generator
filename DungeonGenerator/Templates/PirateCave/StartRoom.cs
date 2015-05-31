@@ -23,7 +23,7 @@ using DungeonGenerator.Dungeon;
 using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates.PirateCave {
-	public class StartRoom : Room {
+	internal class StartRoom : Room {
 		readonly int radius;
 
 		public StartRoom(int radius) {

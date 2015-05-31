@@ -23,7 +23,7 @@ using DungeonGenerator.Dungeon;
 using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates.PirateCave {
-	public class Background : MapBackground {
+	internal class Background : MapBackground {
 		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer) {
 			var tile = new DungeonTile {
 				TileType = PirateCaveTemplate.ShallowWater

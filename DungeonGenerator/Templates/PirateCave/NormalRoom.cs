@@ -23,7 +23,7 @@ using DungeonGenerator.Dungeon;
 using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates.PirateCave {
-	public class NormalRoom : Room {
+	internal class NormalRoom : Room {
 		readonly int w;
 		readonly int h;
 

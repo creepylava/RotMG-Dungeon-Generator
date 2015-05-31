@@ -25,7 +25,7 @@ using RotMG.Common;
 using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator {
-	public class RoomCollision {
+	internal class RoomCollision {
 		const int GridScale = 3;
 		const int GridSize = 1 << GridScale;
 
