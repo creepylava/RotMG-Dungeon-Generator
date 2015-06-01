@@ -94,7 +94,7 @@ namespace DungeonGenerator {
 			Step++;
 		}
 
-		bool PlaceRoom(Room src, Room target, int connPt) {
+		Link? PlaceRoom(Room src, Room target, int connPt) {
 			var sep = template.RoomSeparation.Random(rand);
 			if (src is FixedRoom && target is FixedRoom)
 				throw new NotSupportedException();
@@ -103,55 +103,66 @@ namespace DungeonGenerator {
 			if (target is FixedRoom)
 				return PlaceRoomTargetFixed(src, (FixedRoom)target, connPt, sep);
 
-			return PlaceRoomFree(src, target, connPt, sep);
+			return PlaceRoomFree(src, target, (Direction)connPt, sep);
 		}
 
-		bool PlaceRoomFree(Room src, Room target, int connPt, int sep) {
+		Link? PlaceRoomFree(Room src, Room target, Direction connPt, int sep) {
 			int x, y;
+			Link? link = null;
+
 			switch (connPt) {
-				case 0:
-				case 2:
+				case Direction.North:
+				case Direction.South:
 					// North & South
 					int minX = src.Pos.X + template.CorridorWidth - target.Width;
 					int maxX = src.Pos.X + src.Width - template.CorridorWidth;
 					x = rand.Next(minX, maxX + 1);
 
-					if (connPt == 0)
+					if (connPt == Direction.South)
 						y = src.Pos.Y + src.Height + sep;
 					else
 						y = src.Pos.Y - sep - target.Height;
 
 					target.Pos = new Point(x, y);
 					if (collision.HitTest(target))
-						return false;
+						return null;
+
+					var linkX = new Range(src.Pos.X, src.Pos.X + src.Width).Intersection(
+						new Range(target.Pos.X, target.Pos.X + target.Width));
+					link = new Link(connPt, new Range(linkX.Begin, linkX.End - template.CorridorWidth).Random(rand));
 					break;
 
-				case 1:
-				case 3:
+				case Direction.East:
+				case Direction.West:
 					// East & West
 					int minY = src.Pos.Y + template.CorridorWidth - target.Height;
 					int maxY = src.Pos.Y + src.Height - template.CorridorWidth;
 					y = rand.Next(minY, maxY + 1);
 
-					if (connPt == 1)
+					if (connPt == Direction.East)
 						x = src.Pos.X + src.Width + sep;
 					else
 						x = src.Pos.X - sep - target.Width;
 
 					target.Pos = new Point(x, y);
 					if (collision.HitTest(target))
-						return false;
+						return null;
+
+					var linkY = new Range(src.Pos.Y, src.Pos.Y + src.Height).Intersection(
+						new Range(target.Pos.Y, target.Pos.Y + target.Height));
+					link = new Link(connPt, new Range(linkY.Begin, linkY.End - template.CorridorWidth).Random(rand));
 					break;
 			}
 
 			collision.Add(target);
-			return true;
+			return link;
 		}
 
-		bool PlaceRoomSourceFixed(FixedRoom src, Room target, int connPt, int sep) {
+		Link? PlaceRoomSourceFixed(FixedRoom src, Room target, int connPt, int sep) {
 			var conn = src.ConnectionPoints[connPt];
-
 			int x, y;
+			Link? link = null;
+
 			switch (conn.Item1) {
 				case Direction.North:
 				case Direction.South:
@@ -167,7 +178,9 @@ namespace DungeonGenerator {
 
 					target.Pos = new Point(x, y);
 					if (collision.HitTest(target))
-						return false;
+						return null;
+
+					link = new Link(conn.Item1, src.Pos.X + conn.Item2);
 					break;
 
 				case Direction.East:
@@ -184,15 +197,19 @@ namespace DungeonGenerator {
 
 					target.Pos = new Point(x, y);
 					if (collision.HitTest(target))
-						return false;
+						return null;
+
+					var linkY = new Range(src.Pos.Y, src.Pos.Y + src.Height).Intersection(
+						new Range(target.Pos.Y, target.Pos.Y + target.Height));
+					link = new Link(conn.Item1, src.Pos.Y + conn.Item2);
 					break;
 			}
 
 			collision.Add(target);
-			return true;
+			return link;
 		}
 
-		bool PlaceRoomTargetFixed(Room src, FixedRoom target, int connPt, int sep) {
+		Link? PlaceRoomTargetFixed(Room src, FixedRoom target, int connPt, int sep) {
 			Direction targetDir;
 			switch (connPt) {
 				case 0:
@@ -222,9 +239,10 @@ namespace DungeonGenerator {
 			}
 
 			if (conn == null)
-				return false;
+				return null;
 
 			int x, y;
+			Link? link = null;
 			switch (conn.Item1) {
 				case Direction.North:
 				case Direction.South:
@@ -240,7 +258,9 @@ namespace DungeonGenerator {
 
 					target.Pos = new Point(x, y);
 					if (collision.HitTest(target))
-						return false;
+						return null;
+
+					link = new Link((Direction)connPt, target.Pos.X + conn.Item2);
 					break;
 
 				case Direction.East:
@@ -257,12 +277,14 @@ namespace DungeonGenerator {
 
 					target.Pos = new Point(x, y);
 					if (collision.HitTest(target))
-						return false;
+						return null;
+
+					link = new Link((Direction)connPt, target.Pos.Y + conn.Item2);
 					break;
 			}
 
 			collision.Add(target);
-			return true;
+			return link;
 		}
 
 		int GetMaxConnectionPoints(Room rm) {
@@ -301,15 +323,14 @@ namespace DungeonGenerator {
 				else
 					rm = template.CreateNormal(depth, prev);
 
-				bool connected = false;
+				Link? link = null;
 				foreach (var connPt in seq)
-					if (PlaceRoom(prev, rm, connPt)) {
+					if ((link = PlaceRoom(prev, rm, connPt)) != null) {
 						seq.Remove(connPt);
-						connected = true;
 						break;
 					}
 
-				if (!connected)
+				if (link == null)
 					return false;
 
 				if (targetDepth == depth)
@@ -319,7 +340,7 @@ namespace DungeonGenerator {
 
 				if (targetPlaced) {
 					rm.Depth = depth;
-					Edge.Link(prev, rm);
+					Edge.Link(prev, rm, link.Value);
 					rooms.Add(rm);
 				}
 				else
@@ -359,15 +380,14 @@ namespace DungeonGenerator {
 				else
 					rm = template.CreateNormal(depth, prev);
 
-				bool connected = false;
+				Link? link = null;
 				foreach (var connPt in seq)
-					if (PlaceRoom(prev, rm, connPt)) {
+					if ((link = PlaceRoom(prev, rm, connPt)) != null) {
 						seq.Remove(connPt);
-						connected = true;
 						break;
 					}
 
-				if (!connected)
+				if (link == null)
 					return false;
 
 				if (targetDepth == depth)
@@ -377,7 +397,7 @@ namespace DungeonGenerator {
 
 				if (specialPlaced) {
 					rm.Depth = depth;
-					Edge.Link(prev, rm);
+					Edge.Link(prev, rm, link.Value);
 					rooms.Add(rm);
 				}
 				else
@@ -407,19 +427,18 @@ namespace DungeonGenerator {
 			for (int i = 0; i < numBranch; i++) {
 				var rm = template.CreateNormal(depth, prev);
 
-				bool connected = false;
+				Link? link = null;
 				foreach (var connPt in seq)
-					if (PlaceRoom(prev, rm, connPt)) {
+					if ((link = PlaceRoom(prev, rm, connPt)) != null) {
 						seq.Remove(connPt);
-						connected = true;
 						break;
 					}
 
-				if (!connected)
+				if (link == null)
 					return;
 
 				rm.Depth = depth;
-				Edge.Link(prev, rm);
+				Edge.Link(prev, rm, link.Value);
 				rooms.Add(rm);
 			}
 		}

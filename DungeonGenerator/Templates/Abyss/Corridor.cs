@@ -19,9 +19,28 @@
 */
 
 using System;
+using DungeonGenerator.Dungeon;
+using RotMG.Common;
+using RotMG.Common.Rasterizer;
 
-namespace DungeonGenerator.Dungeon {
-	public abstract class FixedRoom : Room {
-		public abstract Tuple<Direction, int>[] ConnectionPoints { get; }
+namespace DungeonGenerator.Templates.Abyss {
+	internal class Corridor : MapCorridor {
+		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Room src, Room dst, Point srcPos,
+			Point dstPos, Random rand) {
+			var tile = new DungeonTile {
+				TileType = AbyssTemplate.RedSmallChecks
+			};
+
+			if (srcPos.X == dstPos.X) {
+				if (srcPos.Y > dstPos.Y)
+					Utils.Swap(ref srcPos, ref dstPos);
+				rasterizer.FillRect(new Rect(srcPos.X, srcPos.Y, srcPos.X + 3, dstPos.Y), tile);
+			}
+			else if (srcPos.Y == dstPos.Y) {
+				if (srcPos.X > dstPos.X)
+					Utils.Swap(ref srcPos, ref dstPos);
+				rasterizer.FillRect(new Rect(srcPos.X, srcPos.Y, dstPos.X, srcPos.Y + 3), tile);
+			}
+		}
 	}
 }

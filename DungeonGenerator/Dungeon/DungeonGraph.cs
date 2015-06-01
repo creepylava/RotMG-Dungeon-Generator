@@ -51,12 +51,24 @@ namespace DungeonGenerator.Dungeon {
 					my = bounds.MaxY;
 			}
 
-			Width = mx - dx + 8;
-			Height = my - dy + 8;
+			const int Pad = 4;
+
+			Width = mx - dx + Pad * 2;
+			Height = my - dy + Pad * 2;
 
 			for (int i = 0; i < rooms.Length; i++) {
-				var pos = rooms[i].Pos;
-				rooms[i].Pos = new Point(pos.X - dx + 4, pos.Y - dy + 4);
+				var room = rooms[i];
+				var pos = room.Pos;
+				room.Pos = new Point(pos.X - dx + Pad, pos.Y - dy + Pad);
+
+				foreach (var edge in room.Edges) {
+					if (edge.RoomA != room)
+						continue;
+					if (edge.Linkage.Direction == Direction.South || edge.Linkage.Direction == Direction.North)
+						edge.Linkage = new Link(edge.Linkage.Direction, edge.Linkage.Offset - dx + Pad);
+					else if (edge.Linkage.Direction == Direction.East || edge.Linkage.Direction == Direction.West)
+						edge.Linkage = new Link(edge.Linkage.Direction, edge.Linkage.Offset - dy + Pad);
+				}
 			}
 			Rooms = rooms;
 		}

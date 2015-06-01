@@ -19,6 +19,7 @@
 */
 
 using System;
+using System.Linq;
 using DungeonGenerator.Dungeon;
 using DungeonGenerator.Templates;
 using RotMG.Common.Rasterizer;
@@ -97,26 +98,19 @@ namespace DungeonGenerator {
 		}
 
 		void CreateCorridor(Room src, Room dst, out Point srcPos, out Point dstPos) {
-			var srcX = new Range(src.Bounds.X, src.Bounds.MaxX);
-			var srcY = new Range(src.Bounds.Y, src.Bounds.MaxY);
-			var dstX = new Range(dst.Bounds.X, dst.Bounds.MaxX);
-			var dstY = new Range(dst.Bounds.Y, dst.Bounds.MaxY);
+			var edge = src.Edges.Single(ed => ed.RoomB == dst);
+			var link = edge.Linkage;
 
-			Range isect;
-			if (!(isect = srcX.Intersection(dstX)).IsEmpty && srcY.Intersection(dstY).IsEmpty) {
-				// South / North
-				int x = rand.Next(isect.Begin, isect.End - graph.Template.CorridorWidth + 1);
-				srcPos = new Point(x, src.Pos.Y + src.Height / 2);
-				dstPos = new Point(x, dst.Pos.Y + dst.Height / 2);
+			if (link.Direction == Direction.South || link.Direction == Direction.North) {
+				srcPos = new Point(link.Offset, src.Pos.Y + src.Height / 2);
+				dstPos = new Point(link.Offset, dst.Pos.Y + dst.Height / 2);
 			}
-			else if (srcX.Intersection(dstX).IsEmpty && !(isect = srcY.Intersection(dstY)).IsEmpty) {
-				// East / West
-				int y = rand.Next(isect.Begin, isect.End - graph.Template.CorridorWidth + 1);
-				srcPos = new Point(src.Pos.X + src.Width / 2, y);
-				dstPos = new Point(dst.Pos.X + dst.Width / 2, y);
+			else if (link.Direction == Direction.East || link.Direction == Direction.West) {
+				srcPos = new Point(src.Pos.X + src.Width / 2, link.Offset);
+				dstPos = new Point(dst.Pos.X + dst.Width / 2, link.Offset);
 			}
 			else
-				throw new InvalidOperationException();
+				throw new ArgumentException();
 		}
 
 		void RasterizeCorridor(MapCorridor corridor, Edge edge) {

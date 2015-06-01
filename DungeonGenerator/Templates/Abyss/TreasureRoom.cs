@@ -37,7 +37,7 @@ namespace DungeonGenerator.Templates.Abyss {
 		public override Tuple<Direction, int>[] ConnectionPoints { get { return connections; } }
 
 		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand) {
-			rasterizer.Copy(AbyssTemplate.MapTemplate, new Rect(70, 10, 85, 31), Pos);
+			rasterizer.Copy(AbyssTemplate.MapTemplate, new Rect(70, 10, 85, 31), Pos, tile => tile.TileType.Name == "Space");
 		}
 	}
 }

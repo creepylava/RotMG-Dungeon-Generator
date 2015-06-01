@@ -31,7 +31,7 @@ namespace DungeonGenerator.Templates.Abyss {
 		public override int Height { get { return 42; } }
 
 		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand) {
-			rasterizer.Copy(AbyssTemplate.MapTemplate, new Rect(10, 10, 52, 52), Pos);
+			rasterizer.Copy(AbyssTemplate.MapTemplate, new Rect(10, 10, 52, 52), Pos, tile => tile.TileType.Name == "Space");
 		}
 	}
 }

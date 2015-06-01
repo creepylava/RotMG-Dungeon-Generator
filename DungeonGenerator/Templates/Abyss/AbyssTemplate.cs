@@ -89,5 +89,9 @@ namespace DungeonGenerator.Templates.Abyss {
 		public override Room CreateNormal(int depth, Room prev) {
 			return new NormalRoom(8, 8);
 		}
+
+		public override MapCorridor CreateCorridor() {
+			return new Corridor();
+		}
 	}
 }
