@@ -24,32 +24,32 @@ using RotMG.Common;
 
 namespace DungeonGenerator.Templates.PirateCave {
 	public class PirateCaveTemplate : DungeonTemplate {
-		public static readonly TileType LightSand = new TileType(0x00bd, "Light Sand");
-		public static readonly TileType BrownLines = new TileType(0x000c, "Brown Lines");
-		public static readonly TileType ShallowWater = new TileType(0x0073, "Shallow Water");
-		public static readonly TileType Composite = new TileType(0x00fd, "Composite");
-		public static readonly TileType Space = new TileType(0x00fe, "Space");
+		internal static readonly TileType LightSand = new TileType(0x00bd, "Light Sand");
+		internal static readonly TileType BrownLines = new TileType(0x000c, "Brown Lines");
+		internal static readonly TileType ShallowWater = new TileType(0x0073, "Shallow Water");
+		internal static readonly TileType Composite = new TileType(0x00fd, "Composite");
+		internal static readonly TileType Space = new TileType(0x00fe, "Space");
 
-		public static readonly ObjectType CaveWall = new ObjectType(0x01ce, "Cave Wall");
-		public static readonly ObjectType PalmTree = new ObjectType(0x018e, "Palm Tree");
-		public static readonly ObjectType CowardicePortal = new ObjectType(0x0703, "Portal of Cowardice");
+		internal static readonly ObjectType CaveWall = new ObjectType(0x01ce, "Cave Wall");
+		internal static readonly ObjectType PalmTree = new ObjectType(0x018e, "Palm Tree");
+		internal static readonly ObjectType CowardicePortal = new ObjectType(0x0703, "Portal of Cowardice");
 
-		public static readonly ObjectType PirateKing = new ObjectType(0x0927, "Dreadstump the Pirate King");
+		internal static readonly ObjectType PirateKing = new ObjectType(0x0927, "Dreadstump the Pirate King");
 
-		public static readonly ObjectType[] Boss = {
+		internal static readonly ObjectType[] Boss = {
 			new ObjectType(0x683, "Pirate Lieutenant"),
 			new ObjectType(0x684, "Pirate Commander"),
 			new ObjectType(0x685, "Pirate Captain"),
 			new ObjectType(0x686, "Pirate Admiral")
 		};
 
-		public static readonly ObjectType[] Minion = {
+		internal static readonly ObjectType[] Minion = {
 			new ObjectType(0x687, "Cave Pirate Brawler"),
 			new ObjectType(0x688, "Cave Pirate Sailor"),
 			new ObjectType(0x689, "Cave Pirate Veteran")
 		};
 
-		public static readonly ObjectType[] Pet = {
+		internal static readonly ObjectType[] Pet = {
 			new ObjectType(0x68a, "Cave Pirate Moll"),
 			new ObjectType(0x68b, "Cave Pirate Parrot"),
 			new ObjectType(0x68c, "Cave Pirate Macaw"),

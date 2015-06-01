@@ -24,6 +24,28 @@ using RotMG.Common;
 
 namespace DungeonGenerator.Templates.Abyss {
 	public class AbyssTemplate : DungeonTemplate {
+		internal static readonly TileType RedSmallChecks = new TileType(0x003c, "Red Small Checks");
+		internal static readonly TileType Lava = new TileType(0x0070, "Lava");
+
+		internal static readonly ObjectType RedWall = new ObjectType(0x0150, "Red Wall");
+		internal static readonly ObjectType RedTorchWall = new ObjectType(0x0151, "Red Torch Tree");
+		internal static readonly ObjectType PartialRedFloor = new ObjectType(0x0153, "Partial Red Floor");
+
+		internal static readonly ObjectType AbyssImp = new ObjectType(0x66d, "Imp of the Abyss");
+
+		internal static readonly ObjectType[] AbyssDemon = {
+			new ObjectType(0x66e, "Demon of the Abyss"),
+			new ObjectType(0x66f, "Demon Warrior of the Abyss"),
+			new ObjectType(0x670, "Demon Mage of the Abyss")
+		};
+
+		internal static readonly ObjectType[] AbyssBrute = {
+			new ObjectType(0x671, "Brute of the Abyss"),
+			new ObjectType(0x672, "Brute Warrior of the Abyss")
+		};
+
+		internal static readonly ObjectType AbyssBones = new ObjectType(0x01fa, "Abyss Bones");
+
 		internal static readonly DungeonTile[,] MapTemplate;
 
 		static AbyssTemplate() {
