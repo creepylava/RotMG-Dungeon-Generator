@@ -25,7 +25,7 @@ using RotMG.Common;
 using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator {
-	internal class RoomCollision {
+	public class RoomCollision {
 		const int GridScale = 3;
 		const int GridSize = 1 << GridScale;
 
@@ -57,6 +57,22 @@ namespace DungeonGenerator {
 			for (; y <= bounds.MaxY + GridSize; y += GridSize) {
 				for (x = bounds.X; x <= bounds.MaxX + 20; x += GridSize)
 					Add(x, y, rm);
+			}
+		}
+
+		void Remove(int x, int y, Room rm) {
+			var key = new RoomKey(x, y);
+			HashSet<Room> roomList;
+			if (rooms.TryGetValue(key, out roomList))
+				roomList.Remove(rm);
+		}
+
+		public void Remove(Room rm) {
+			var bounds = rm.Bounds;
+			int x = bounds.X, y = bounds.Y;
+			for (; y <= bounds.MaxY + GridSize; y += GridSize) {
+				for (x = bounds.X; x <= bounds.MaxX + 20; x += GridSize)
+					Remove(x, y, rm);
 			}
 		}
 

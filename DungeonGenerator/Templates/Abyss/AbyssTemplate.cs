@@ -57,16 +57,20 @@ namespace DungeonGenerator.Templates.Abyss {
 		NormDist targetDepth;
 		public override NormDist TargetDepth { get { return targetDepth; } }
 
-		public override NormDist SpecialRmCount { get { return null; } }
+		NormDist specialRmCount;
+		public override NormDist SpecialRmCount { get { return specialRmCount; } }
 
-		public override NormDist SpecialRmDepthDist { get { return null; } }
+		NormDist specialRmDepthDist;
+		public override NormDist SpecialRmDepthDist { get { return specialRmDepthDist; } }
 
 		public override Range RoomSeparation { get { return new Range(0, 1); } }
 
 		public override int CorridorWidth { get { return 2; } }
 
 		public override void Initialize() {
-			targetDepth = new NormDist(5, 25, 15, 40, Rand.Next());
+			targetDepth = new NormDist(3, 20, 15, 35, Rand.Next());
+			specialRmCount = new NormDist(0, 1, 1, 1, Rand.Next());
+			specialRmDepthDist = new NormDist(5, 20, 10, 35, Rand.Next());
 		}
 
 		public override Room CreateStart(int depth) {
@@ -78,7 +82,7 @@ namespace DungeonGenerator.Templates.Abyss {
 		}
 
 		public override Room CreateSpecial(int depth, Room prev) {
-			throw new InvalidOperationException();
+			return new TreasureRoom();
 		}
 
 		public override Room CreateNormal(int depth, Room prev) {

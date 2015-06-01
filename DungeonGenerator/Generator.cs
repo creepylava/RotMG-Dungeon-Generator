@@ -31,8 +31,8 @@ namespace DungeonGenerator {
 		Initialize = 0,
 
 		TargetGeneration = 1,
-		SpecialGeneration = 2,
-		BranchGeneration = 3,
+		BranchGeneration = 2,
+		SpecialGeneration = 3,
 
 		Finish = 4
 	}
@@ -85,6 +85,10 @@ namespace DungeonGenerator {
 
 				case GenerationStep.BranchGeneration:
 					GenerateBranches();
+					break;
+
+				case GenerationStep.SpecialGeneration:
+					GenerateSpecials();
 					break;
 			}
 			Step++;
@@ -178,15 +182,71 @@ namespace DungeonGenerator {
 				if (!connected)
 					return false;
 
-				rm.Depth = depth;
-				Edge.Link(prev, rm);
-				rooms.Add(rm);
-
 				if (targetDepth == depth)
 					targetPlaced = true;
 				else
 					targetPlaced = GenerateTargetInternal(rm, depth + 1, targetDepth);
+
+				if (targetPlaced) {
+					rm.Depth = depth;
+					Edge.Link(prev, rm);
+					rooms.Add(rm);
+				}
+				else
+					collision.Remove(rm);
 			} while (!targetPlaced);
+			return true;
+		}
+
+		void GenerateSpecials() {
+			int numRooms = (int)template.SpecialRmCount.NextValue();
+			for (int i = 0; i < numRooms; i++) {
+				bool generated;
+				var targetDepth = (int)template.SpecialRmDepthDist.NextValue();
+				do {
+					var room = rooms[rand.Next(rooms.Count)];
+					generated = room.Depth < targetDepth && GenerateSpecialInternal(room, room.Depth + 1, targetDepth);
+				} while (!generated);
+			}
+		}
+
+		bool GenerateSpecialInternal(Room prev, int depth, int targetDepth) {
+			var connPtNum = GetMaxConnectionPoints(prev);
+			var seq = Enumerable.Range(0, connPtNum).ToList();
+			rand.Shuffle(seq);
+
+			bool specialPlaced;
+			do {
+				Room rm;
+				if (targetDepth == depth)
+					rm = template.CreateSpecial(depth, prev);
+				else
+					rm = template.CreateNormal(depth, prev);
+
+				bool connected = false;
+				foreach (var connPt in seq)
+					if (PlaceRoom(prev, rm, connPt)) {
+						seq.Remove(connPt);
+						connected = true;
+						break;
+					}
+
+				if (!connected)
+					return false;
+
+				if (targetDepth == depth)
+					specialPlaced = true;
+				else
+					specialPlaced = GenerateSpecialInternal(rm, depth + 1, targetDepth);
+
+				if (specialPlaced) {
+					rm.Depth = depth;
+					Edge.Link(prev, rm);
+					rooms.Add(rm);
+				}
+				else
+					collision.Remove(rm);
+			} while (!specialPlaced);
 			return true;
 		}
 
