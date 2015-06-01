@@ -89,6 +89,17 @@ namespace MapClipper {
 			var args = cmd.Substring(index + 1);
 
 			switch (cmdName) {
+				case "NEW":
+					var size = args.Split(' ');
+					int w = int.Parse(size[0]);
+					int h = int.Parse(size[1]);
+					map = new DungeonTile[w, h];
+					for (int x = 0; x < w; x++)
+						for (int y = 0; y < h; y++)
+							map[x, y] = space;
+					AppendLine("New map " + w + "x" + h + " created.");
+					break;
+
 				case "LOAD":
 					LoadMap(args);
 					break;

@@ -27,7 +27,6 @@ using System.Linq;
 using System.Windows.Forms;
 using DungeonGenerator.Dungeon;
 using DungeonGenerator.Templates.Abyss;
-using Json;
 
 namespace DungeonGenerator {
 	public partial class frmMain : Form {
@@ -246,78 +245,13 @@ namespace DungeonGenerator {
 		}
 
 
-		struct TileComparer : IEqualityComparer<DungeonTile> {
-			public bool Equals(DungeonTile x, DungeonTile y) {
-				return x.TileType == y.TileType && x.Region == y.Region && x.Object == y.Object;
-			}
-
-			public int GetHashCode(DungeonTile obj) {
-				int code = (int)obj.TileType.Id;
-				if (obj.Region != null)
-					code = code * 7 + obj.Region.GetHashCode();
-				if (obj.Object != null)
-					code = code * 13 + obj.Object.GetHashCode();
-				return code;
-			}
-		}
-
 		void box_MouseClick(object sender, MouseEventArgs e) {
 			if (e.Button != MouseButtons.Right ||
 			    ras == null)
 				return;
 
 			var map = ras.ExportMap();
-			int w = map.GetUpperBound(0) + 1, h = map.GetUpperBound(1) + 1;
-
-			var tiles = new JsonArray();
-			var indexLookup = new Dictionary<DungeonTile, short>(new TileComparer());
-			byte[] data = new byte[w * h * 2];
-			int ptr = 0;
-
-			for (int y = 0; y < h; y++)
-				for (int x = 0; x < w; x++) {
-					var tile = map[x, y];
-					short index;
-					if (!indexLookup.TryGetValue(tile, out index)) {
-						indexLookup.Add(tile, index = (short)tiles.Count);
-						tiles.Add(tile);
-					}
-					data[ptr++] = (byte)(index >> 8);
-					data[ptr++] = (byte)(index & 0xff);
-				}
-
-			for (int i = 0; i < tiles.Count; i++) {
-				var tile = (DungeonTile)tiles[i];
-
-				var jsonTile = new JsonObject();
-				jsonTile["ground"] = tile.TileType.Name;
-				if (!string.IsNullOrEmpty(tile.Region)) {
-					var region = new JsonObject {
-						{ "id", tile.Region }
-					};
-					jsonTile["regions"] = new JsonArray { region };
-				}
-				if (tile.Object != null) {
-					var obj = new JsonObject {
-						{ "id", tile.Object.ObjectType.Name }
-					};
-					if (tile.Object.Attributes.Length > 0) {
-						var objAttrs = tile.Object.Attributes.Select(kvp => kvp.Key + ":" + kvp.Value).ToArray();
-						obj["name"] = string.Join(",", objAttrs);
-					}
-					jsonTile["objs"] = new JsonArray { obj };
-				}
-
-				tiles[i] = jsonTile;
-			}
-
-			var mapObj = new JsonObject();
-			mapObj["width"] = w;
-			mapObj["height"] = h;
-			mapObj["dict"] = tiles;
-			mapObj["data"] = Convert.ToBase64String(Zlib.Compress(data));
-
-			var json = mapObj.ToString();
+			var json = JsonMap.Save(map);
 
 			var sfd = new SaveFileDialog();
 			sfd.Filter = "Json Map (*.jm)|*.jm|All Files (*.*)|*.*";

@@ -44,10 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JsonMap.cs" />
     <Compile Include="Templates\Abyss\BossRoom.cs" />
     <Compile Include="Templates\Abyss\NormalRoom.cs" />
     <Compile Include="Templates\Abyss\AbyssTemplate.cs" />
     <Compile Include="Templates\Abyss\StartRoom.cs" />
+    <Compile Include="RasterizerUtils.cs" />
     <Compile Include="Zlib.cs" />
     <Compile Include="Dungeon\DungeonObject.cs" />
     <Compile Include="Dungeon\DungeonGraph.cs" />
@@ -84,7 +86,9 @@
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\Abyss\template.jm" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

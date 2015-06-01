@@ -19,6 +19,7 @@
 */
 
 using System;
+using System.IO;
 using DungeonGenerator.Dungeon;
 using RotMG.Common;
 
@@ -60,6 +61,13 @@ namespace DungeonGenerator.Templates {
 
 		public virtual MapCorridor CreateCorridor() {
 			return new MapCorridor();
+		}
+
+		protected static DungeonTile[,] ReadTemplate(Type templateType) {
+			var templateName = templateType.Namespace + ".template.jm";
+			var stream = templateType.Assembly.GetManifestResourceStream(templateName);
+			using (var reader = new StreamReader(stream))
+				return JsonMap.Load(reader.ReadToEnd());
 		}
 	}
 }

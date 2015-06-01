@@ -24,6 +24,12 @@ using RotMG.Common;
 
 namespace DungeonGenerator.Templates.Abyss {
 	public class AbyssTemplate : DungeonTemplate {
+		internal static readonly DungeonTile[,] MapTemplate;
+
+		static AbyssTemplate() {
+			MapTemplate = ReadTemplate(typeof(AbyssTemplate));
+		}
+
 		public override int MaxDepth { get { return 50; } }
 
 		NormDist targetDepth;
