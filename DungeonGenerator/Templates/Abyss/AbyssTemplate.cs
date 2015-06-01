@@ -30,6 +30,7 @@ namespace DungeonGenerator.Templates.Abyss {
 		internal static readonly ObjectType RedWall = new ObjectType(0x0150, "Red Wall");
 		internal static readonly ObjectType RedTorchWall = new ObjectType(0x0151, "Red Torch Tree");
 		internal static readonly ObjectType PartialRedFloor = new ObjectType(0x0153, "Partial Red Floor");
+		internal static readonly ObjectType CowardicePortal = new ObjectType(0x0703, "Portal of Cowardice");
 
 		internal static readonly ObjectType AbyssImp = new ObjectType(0x66d, "Imp of the Abyss");
 
@@ -69,7 +70,7 @@ namespace DungeonGenerator.Templates.Abyss {
 
 		public override void Initialize() {
 			targetDepth = new NormDist(3, 20, 15, 35, Rand.Next());
-			specialRmCount = new NormDist(0, 1, 1, 1, Rand.Next());
+			specialRmCount = new NormDist(1.5f, 0.5f, 0, 5, Rand.Next());
 			specialRmDepthDist = new NormDist(5, 20, 10, 35, Rand.Next());
 		}
 

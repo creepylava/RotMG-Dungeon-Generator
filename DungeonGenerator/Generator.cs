@@ -31,8 +31,8 @@ namespace DungeonGenerator {
 		Initialize = 0,
 
 		TargetGeneration = 1,
-		BranchGeneration = 2,
-		SpecialGeneration = 3,
+		SpecialGeneration = 2,
+		BranchGeneration = 3,
 
 		Finish = 4
 	}
@@ -83,12 +83,12 @@ namespace DungeonGenerator {
 					}
 					break;
 
-				case GenerationStep.BranchGeneration:
-					GenerateBranches();
-					break;
-
 				case GenerationStep.SpecialGeneration:
 					GenerateSpecials();
+					break;
+
+				case GenerationStep.BranchGeneration:
+					GenerateBranches();
 					break;
 			}
 			Step++;
@@ -266,6 +266,8 @@ namespace DungeonGenerator {
 		}
 
 		int GetMaxConnectionPoints(Room rm) {
+			if (rm is FixedRoom)
+				return ((FixedRoom)rm).ConnectionPoints.Length;
 			return 4;
 		}
 
@@ -329,11 +331,17 @@ namespace DungeonGenerator {
 		void GenerateSpecials() {
 			int numRooms = (int)template.SpecialRmCount.NextValue();
 			for (int i = 0; i < numRooms; i++) {
-				bool generated;
-				var targetDepth = (int)template.SpecialRmDepthDist.NextValue();
+				int targetDepth;
+				do {
+					targetDepth = (int)template.SpecialRmDepthDist.NextValue();
+				} while (targetDepth > maxDepth * 3 / 2);
+
+				bool generated = false;
 				do {
 					var room = rooms[rand.Next(rooms.Count)];
-					generated = room.Depth < targetDepth && GenerateSpecialInternal(room, room.Depth + 1, targetDepth);
+					if (room.Depth >= targetDepth)
+						continue;
+					generated = GenerateSpecialInternal(room, room.Depth + 1, targetDepth);
 				} while (!generated);
 			}
 		}

@@ -37,6 +37,26 @@ namespace DungeonGenerator.Templates.Abyss {
 		public override int Height { get { return len; } }
 
 		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand) {
+			rasterizer.FillRect(Bounds, new DungeonTile {
+				TileType = AbyssTemplate.RedSmallChecks
+			});
+
+			var buf = rasterizer.Bitmap;
+			var bounds = Bounds;
+
+			bool portalPlaced = false;
+			while (!portalPlaced) {
+				int x = rand.Next(bounds.X, bounds.MaxX);
+				int y = rand.Next(bounds.Y, bounds.MaxY);
+				if (buf[x, y].Object != null)
+					continue;
+
+				buf[x, y].Region = "Spawn";
+				buf[x, y].Object = new DungeonObject {
+					ObjectType = AbyssTemplate.CowardicePortal
+				};
+				portalPlaced = true;
+			}
 		}
 	}
 }
