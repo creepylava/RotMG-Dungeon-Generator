@@ -26,7 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using DungeonGenerator.Dungeon;
-using DungeonGenerator.Templates.PirateCave;
+using DungeonGenerator.Templates.Abyss;
 using Json;
 
 namespace DungeonGenerator {
@@ -221,7 +221,7 @@ namespace DungeonGenerator {
 
 		void btnNewStep_Click(object sender, EventArgs e) {
 			seed = rand.Next();
-			gen = new Generator(seed, new PirateCaveTemplate());
+			gen = new Generator(seed, new AbyssTemplate());
 			ras = null;
 			Text = ProductName + " [Seed: " + seed + "]";
 

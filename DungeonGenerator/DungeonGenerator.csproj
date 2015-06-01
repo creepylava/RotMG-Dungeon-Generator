@@ -44,6 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Templates\Abyss\BossRoom.cs" />
+    <Compile Include="Templates\Abyss\NormalRoom.cs" />
+    <Compile Include="Templates\Abyss\AbyssTemplate.cs" />
+    <Compile Include="Templates\Abyss\StartRoom.cs" />
     <Compile Include="Zlib.cs" />
     <Compile Include="Dungeon\DungeonObject.cs" />
     <Compile Include="Dungeon\DungeonGraph.cs" />

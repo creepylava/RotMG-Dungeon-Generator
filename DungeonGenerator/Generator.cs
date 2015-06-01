@@ -45,6 +45,7 @@ namespace DungeonGenerator {
 		Room rootRoom;
 		List<Room> rooms;
 		int maxDepth;
+		int minRoomNum;
 		int maxRoomNum;
 
 		public GenerationStep Step { get; set; }
@@ -145,7 +146,8 @@ namespace DungeonGenerator {
 			rooms.Add(rootRoom);
 
 			if (GenerateTargetInternal(rootRoom, 1, targetDepth)) {
-				maxRoomNum = rooms.Count * 3;
+				minRoomNum = targetDepth * 3;
+				maxRoomNum = targetDepth * 5;
 				maxDepth = rooms.Count;
 				return true;
 			}
@@ -185,18 +187,14 @@ namespace DungeonGenerator {
 				else
 					targetPlaced = GenerateTargetInternal(rm, depth + 1, targetDepth);
 			} while (!targetPlaced);
-
 			return true;
 		}
 
 		void GenerateBranches() {
-			var originalRooms = rooms.ToList();
-			rand.Shuffle(originalRooms);
-
-			foreach (var room in originalRooms) {
-				GenerateBranchInternal(room, room.Depth + 1, room.Type == RoomType.Target ? template.MaxDepth : maxDepth);
-				if (rooms.Count >= maxRoomNum)
-					break;
+			int numRooms = new Range(minRoomNum, maxRoomNum).Random(rand);
+			while (rooms.Count < numRooms) {
+				var room = rooms[rand.Next(rooms.Count)];
+				GenerateBranchInternal(room, room.Depth + 1, template.MaxDepth);
 			}
 		}
 
@@ -204,32 +202,11 @@ namespace DungeonGenerator {
 			if (depth >= maxDepth)
 				return;
 
-			if (rooms.Count >= maxRoomNum)
-				return;
-
 			var connPtNum = GetMaxConnectionPoints(prev);
 			var seq = Enumerable.Range(0, connPtNum).ToList();
 			rand.Shuffle(seq);
 
-			int numBranch = rand.Next(8);
-			switch (numBranch) {
-				case 0:
-				case 1:
-					numBranch = 1;
-					break;
-				case 2:
-				case 3:
-				case 4:
-					numBranch = 2;
-					break;
-				case 5:
-				case 6:
-					numBranch = 3;
-					break;
-				case 7:
-					numBranch = 4;
-					break;
-			}
+			var numBranch = new Range(1, connPtNum).Random(rand);
 			numBranch -= prev.Edges.Count;
 			for (int i = 0; i < numBranch; i++) {
 				var rm = template.CreateNormal(depth, prev);
@@ -248,8 +225,6 @@ namespace DungeonGenerator {
 				rm.Depth = depth;
 				Edge.Link(prev, rm);
 				rooms.Add(rm);
-
-				GenerateBranchInternal(rm, depth + 1, maxDepth);
 			}
 		}
 
