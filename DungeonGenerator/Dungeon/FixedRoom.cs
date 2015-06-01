@@ -19,25 +19,16 @@
 */
 
 using System;
-using DungeonGenerator.Dungeon;
-using RotMG.Common.Rasterizer;
 
-namespace DungeonGenerator.Templates.Abyss {
-	internal class TreasureRoom : FixedRoom {
-		public override RoomType Type { get { return RoomType.Special; } }
+namespace DungeonGenerator.Dungeon {
+	public enum Direction {
+		South = 0,
+		East = 1,
+		North = 2,
+		West = 3
+	}
 
-		public override int Width { get { return 15; } }
-
-		public override int Height { get { return 21; } }
-
-		static readonly Tuple<Direction, int>[] connections = {
-			Tuple.Create(Direction.South, 6)
-		};
-
-		public override Tuple<Direction, int>[] ConnectionPoints { get { return connections; } }
-
-		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand) {
-			rasterizer.Copy(AbyssTemplate.MapTemplate, new Rect(70, 10, 85, 31), Pos);
-		}
+	public abstract class FixedRoom : Room {
+		public abstract Tuple<Direction, int>[] ConnectionPoints { get; }
 	}
 }

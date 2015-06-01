@@ -96,6 +96,17 @@ namespace DungeonGenerator {
 
 		bool PlaceRoom(Room src, Room target, int connPt) {
 			var sep = template.RoomSeparation.Random(rand);
+			if (src is FixedRoom && target is FixedRoom)
+				throw new NotSupportedException();
+			if (src is FixedRoom)
+				return PlaceRoomSourceFixed((FixedRoom)src, target, connPt, sep);
+			if (target is FixedRoom)
+				return PlaceRoomTargetFixed(src, (FixedRoom)target, connPt, sep);
+
+			return PlaceRoomFree(src, target, connPt, sep);
+		}
+
+		bool PlaceRoomFree(Room src, Room target, int connPt, int sep) {
 			int x, y;
 			switch (connPt) {
 				case 0:
@@ -123,6 +134,123 @@ namespace DungeonGenerator {
 					y = rand.Next(minY, maxY + 1);
 
 					if (connPt == 1)
+						x = src.Pos.X + src.Width + sep;
+					else
+						x = src.Pos.X - sep - target.Width;
+
+					target.Pos = new Point(x, y);
+					if (collision.HitTest(target))
+						return false;
+					break;
+			}
+
+			collision.Add(target);
+			return true;
+		}
+
+		bool PlaceRoomSourceFixed(FixedRoom src, Room target, int connPt, int sep) {
+			var conn = src.ConnectionPoints[connPt];
+
+			int x, y;
+			switch (conn.Item1) {
+				case Direction.North:
+				case Direction.South:
+					// North & South
+					int minX = src.Pos.X + conn.Item2 + template.CorridorWidth - target.Width;
+					int maxX = src.Pos.X + conn.Item2;
+					x = rand.Next(minX, maxX + 1);
+
+					if (conn.Item1 == Direction.South)
+						y = src.Pos.Y + src.Height + sep;
+					else
+						y = src.Pos.Y - sep - target.Height;
+
+					target.Pos = new Point(x, y);
+					if (collision.HitTest(target))
+						return false;
+					break;
+
+				case Direction.East:
+				case Direction.West:
+					// East & West
+					int minY = src.Pos.Y + conn.Item2 + template.CorridorWidth - target.Height;
+					int maxY = src.Pos.Y + conn.Item2;
+					y = rand.Next(minY, maxY + 1);
+
+					if (conn.Item1 == Direction.East)
+						x = src.Pos.X + src.Width + sep;
+					else
+						x = src.Pos.X - sep - target.Width;
+
+					target.Pos = new Point(x, y);
+					if (collision.HitTest(target))
+						return false;
+					break;
+			}
+
+			collision.Add(target);
+			return true;
+		}
+
+		bool PlaceRoomTargetFixed(Room src, FixedRoom target, int connPt, int sep) {
+			Direction targetDir;
+			switch (connPt) {
+				case 0:
+					targetDir = Direction.North;
+					break;
+				case 1:
+					targetDir = Direction.West;
+					break;
+				case 2:
+					targetDir = Direction.South;
+					break;
+				case 3:
+					targetDir = Direction.East;
+					break;
+				default:
+					throw new ArgumentException();
+			}
+
+			var connPts = (Tuple<Direction, int>[])target.ConnectionPoints.Clone();
+			rand.Shuffle(connPts);
+			Tuple<Direction, int> conn = null;
+			foreach (var pt in connPts) {
+				if (pt.Item1 == targetDir) {
+					conn = pt;
+					break;
+				}
+			}
+
+			if (conn == null)
+				return false;
+
+			int x, y;
+			switch (conn.Item1) {
+				case Direction.North:
+				case Direction.South:
+					// North & South
+					int minX = src.Pos.X - conn.Item2;
+					int maxX = src.Pos.X + src.Width - template.CorridorWidth - conn.Item2;
+					x = rand.Next(minX, maxX + 1);
+
+					if (conn.Item1 == Direction.North)
+						y = src.Pos.Y + src.Height + sep;
+					else
+						y = src.Pos.Y - sep - target.Height;
+
+					target.Pos = new Point(x, y);
+					if (collision.HitTest(target))
+						return false;
+					break;
+
+				case Direction.East:
+				case Direction.West:
+					// East & West
+					int minY = src.Pos.Y - conn.Item2;
+					int maxY = src.Pos.Y + src.Height - template.CorridorWidth - conn.Item2;
+					y = rand.Next(minY, maxY + 1);
+
+					if (conn.Item1 == Direction.West)
 						x = src.Pos.X + src.Width + sep;
 					else
 						x = src.Pos.X - sep - target.Width;

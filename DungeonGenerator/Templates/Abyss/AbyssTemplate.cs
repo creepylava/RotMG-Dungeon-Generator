@@ -65,7 +65,7 @@ namespace DungeonGenerator.Templates.Abyss {
 
 		public override Range RoomSeparation { get { return new Range(0, 1); } }
 
-		public override int CorridorWidth { get { return 2; } }
+		public override int CorridorWidth { get { return 3; } }
 
 		public override void Initialize() {
 			targetDepth = new NormDist(3, 20, 15, 35, Rand.Next());

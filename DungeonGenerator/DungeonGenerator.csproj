@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dungeon\FixedRoom.cs" />
     <Compile Include="JsonMap.cs" />
     <Compile Include="Templates\Abyss\BossRoom.cs" />
     <Compile Include="Templates\Abyss\TreasureRoom.cs" />
