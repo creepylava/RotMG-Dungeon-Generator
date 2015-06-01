@@ -192,7 +192,7 @@ namespace DungeonGenerator {
 
 		void RenderRaster() {
 			var map = ras.ExportMap();
-			int w = map.GetUpperBound(0), h = map.GetUpperBound(1);
+			int w = map.GetUpperBound(0) + 1, h = map.GetUpperBound(1) + 1;
 			var bmp = new Bitmap(w * ScaleFactor, h * ScaleFactor);
 
 			for (int x = 0; x < w; x++)
@@ -267,7 +267,7 @@ namespace DungeonGenerator {
 				return;
 
 			var map = ras.ExportMap();
-			int w = map.GetUpperBound(0), h = map.GetUpperBound(1);
+			int w = map.GetUpperBound(0) + 1, h = map.GetUpperBound(1) + 1;
 
 			var tiles = new JsonArray();
 			var indexLookup = new Dictionary<DungeonTile, short>(new TileComparer());
