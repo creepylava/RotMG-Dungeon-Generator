@@ -36,7 +36,7 @@ namespace DungeonGenerator {
 		Finish = 10
 	}
 
-	internal class Rasterizer {
+	public class Rasterizer {
 		readonly Random rand;
 		readonly DungeonGraph graph;
 		readonly BitmapRasterizer<DungeonTile> rasterizer;
