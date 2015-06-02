@@ -95,12 +95,12 @@ namespace DungeonGenerator.Templates.PirateCave {
 			return new Corridor();
 		}
 
-		public override MapBackground CreateBackground() {
+		public override MapRender CreateBackground() {
 			return new Background();
 		}
 
-		public override MapOverlay CreateOverlay() {
-			return new Overlay(Rand);
+		public override MapRender CreateOverlay() {
+			return new Overlay();
 		}
 	}
 }

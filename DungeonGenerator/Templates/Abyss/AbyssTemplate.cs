@@ -95,8 +95,8 @@ namespace DungeonGenerator.Templates.Abyss {
 			return new Corridor();
 		}
 
-		public override MapOverlay CreateOverlay() {
-			return new Overlay(Rand);
+		public override MapRender CreateOverlay() {
+			return new Overlay();
 		}
 	}
 }

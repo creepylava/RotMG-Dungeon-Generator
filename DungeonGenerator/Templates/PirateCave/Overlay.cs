@@ -20,17 +20,10 @@
 
 using System;
 using DungeonGenerator.Dungeon;
-using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates.PirateCave {
-	internal class Overlay : MapOverlay {
-		readonly Random rand;
-
-		public Overlay(Random rand) {
-			this.rand = rand;
-		}
-
-		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand) {
+	internal class Overlay : MapRender {
+		public override void Rasterize() {
 			var wall = new DungeonTile {
 				TileType = PirateCaveTemplate.Composite,
 				Object = new DungeonObject {
@@ -44,8 +37,8 @@ namespace DungeonGenerator.Templates.PirateCave {
 				TileType = PirateCaveTemplate.Space
 			};
 
-			int w = rasterizer.Width, h = rasterizer.Height;
-			var buf = rasterizer.Bitmap;
+			int w = Rasterizer.Width, h = Rasterizer.Height;
+			var buf = Rasterizer.Bitmap;
 			for (int x = 0; x < w; x++)
 				for (int y = 0; y < h; y++) {
 					if (buf[x, y].TileType != PirateCaveTemplate.ShallowWater)
@@ -79,7 +72,7 @@ namespace DungeonGenerator.Templates.PirateCave {
 					         tmp[x, y - 1].TileType == PirateCaveTemplate.ShallowWater) {
 						nearWater = true;
 					}
-					if (nearWater && rand.NextDouble() > 0.4)
+					if (nearWater && Rand.NextDouble() > 0.4)
 						buf[x, y] = water;
 				}
 

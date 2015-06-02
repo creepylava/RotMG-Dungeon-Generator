@@ -20,16 +20,15 @@
 
 using System;
 using DungeonGenerator.Dungeon;
-using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates.PirateCave {
-	internal class Background : MapBackground {
-		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand) {
+	internal class Background : MapRender {
+		public override void Rasterize() {
 			var tile = new DungeonTile {
 				TileType = PirateCaveTemplate.ShallowWater
 			};
 
-			rasterizer.Clear(tile);
+			Rasterizer.Clear(tile);
 		}
 	}
 }

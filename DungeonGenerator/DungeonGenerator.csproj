@@ -79,8 +79,7 @@
     <Compile Include="SimpleJson.cs" />
     <Compile Include="Templates\MapCorridor.cs" />
     <Compile Include="Templates\DungeonTemplate.cs" />
-    <Compile Include="Templates\MapBackground.cs" />
-    <Compile Include="Templates\MapOverlay.cs" />
+    <Compile Include="Templates\MapRender.cs" />
     <Compile Include="Templates\PirateCave\BossRoom.cs" />
     <Compile Include="Templates\PirateCave\Background.cs" />
     <Compile Include="Templates\PirateCave\Overlay.cs" />

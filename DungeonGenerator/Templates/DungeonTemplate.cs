@@ -51,12 +51,12 @@ namespace DungeonGenerator.Templates {
 		public virtual void InitializeRasterization(DungeonGraph graph) {
 		}
 
-		public virtual MapBackground CreateBackground() {
-			return new MapBackground();
+		public virtual MapRender CreateBackground() {
+			return new MapRender();
 		}
 
-		public virtual MapOverlay CreateOverlay() {
-			return new MapOverlay();
+		public virtual MapRender CreateOverlay() {
+			return new MapRender();
 		}
 
 		public virtual MapCorridor CreateCorridor() {

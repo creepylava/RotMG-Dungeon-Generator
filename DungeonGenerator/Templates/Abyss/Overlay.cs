@@ -20,25 +20,20 @@
 
 using System;
 using DungeonGenerator.Dungeon;
-using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates.Abyss {
-	internal class Overlay : MapOverlay {
-		readonly Random rand;
-
-		public Overlay(Random rand) {
-			this.rand = rand;
-		}
-
+	internal class Overlay : MapRender {
 		byte[,] GenerateHeightMap(int w, int h) {
 			float[,] map = new float[w, h];
 			int maxR = Math.Min(w, h);
-			int r = rand.Next(maxR * 1 / 3, maxR * 2 / 3);
+			int r = Rand.Next(maxR * 1 / 3, maxR * 2 / 3);
 			int r2 = r * r;
 
 			for (int i = 0; i < 200; i++) {
-				int cx = rand.Next(w), cy = rand.Next(h);
-				float fact = (float)rand.NextDouble() * 3 + 1;
+				int cx = Rand.Next(w), cy = Rand.Next(h);
+				float fact = (float)Rand.NextDouble() * 3 + 1;
+				if (Rand.Next() % 2 == 0)
+					fact = 1 / fact;
 
 				for (int x = 0; x < w; x++)
 					for (int y = 0; y < h; y++) {
@@ -72,15 +67,15 @@ namespace DungeonGenerator.Templates.Abyss {
 			return a + (int)((b - a) * val);
 		}
 
-		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand) {
+		public override void Rasterize() {
 			var floor = new DungeonObject {
 				ObjectType = AbyssTemplate.PartialRedFloor
 			};
 
 			const int Sample = 4;
 
-			int w = rasterizer.Width, h = rasterizer.Height;
-			var buf = rasterizer.Bitmap;
+			int w = Rasterizer.Width, h = Rasterizer.Height;
+			var buf = Rasterizer.Bitmap;
 			var hm = GenerateHeightMap(w / Sample + 2, h / Sample + 2);
 
 			for (int x = 0; x < w; x++)
@@ -101,7 +96,7 @@ namespace DungeonGenerator.Templates.Abyss {
 
 					if ((hv / 10) % 2 == 0) {
 						buf[x, y].TileType = AbyssTemplate.Lava;
-						if (rand.NextDouble() > 0.9 && buf[x, y].Object == null)
+						if (Rand.NextDouble() > 0.9 && buf[x, y].Object == null)
 							buf[x, y].Object = floor;
 					}
 				}
