@@ -8,7 +8,7 @@
     <ProjectGuid>{E3061024-61ED-46AA-8A0D-CD9747E7BFAE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DungeonGen</RootNamespace>
+    <RootNamespace>DungeonGenerator</RootNamespace>
     <AssemblyName>DungeonGen</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
