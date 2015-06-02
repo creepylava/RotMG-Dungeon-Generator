@@ -50,6 +50,9 @@
     <Compile Include="Templates\Abyss\Corridor.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Templates\Abyss\Overlay.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Templates\Abyss\TreasureRoom.cs" />
     <Compile Include="Templates\Abyss\NormalRoom.cs" />
     <Compile Include="Templates\Abyss\AbyssTemplate.cs" />

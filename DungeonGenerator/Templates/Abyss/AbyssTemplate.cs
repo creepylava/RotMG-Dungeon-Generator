@@ -26,6 +26,7 @@ namespace DungeonGenerator.Templates.Abyss {
 	public class AbyssTemplate : DungeonTemplate {
 		internal static readonly TileType RedSmallChecks = new TileType(0x003c, "Red Small Checks");
 		internal static readonly TileType Lava = new TileType(0x0070, "Lava");
+		internal static readonly TileType Space = new TileType(0x00fe, "Space");
 
 		internal static readonly ObjectType RedWall = new ObjectType(0x0150, "Red Wall");
 		internal static readonly ObjectType RedTorchWall = new ObjectType(0x0151, "Red Torch Tree");
@@ -92,6 +93,10 @@ namespace DungeonGenerator.Templates.Abyss {
 
 		public override MapCorridor CreateCorridor() {
 			return new Corridor();
+		}
+
+		public override MapOverlay CreateOverlay() {
+			return new Overlay(Rand);
 		}
 	}
 }

@@ -46,8 +46,8 @@ namespace DungeonGenerator.Templates.Abyss {
 
 			bool portalPlaced = false;
 			while (!portalPlaced) {
-				int x = rand.Next(bounds.X, bounds.MaxX);
-				int y = rand.Next(bounds.Y, bounds.MaxY);
+				int x = rand.Next(bounds.X + 2, bounds.MaxX - 4);
+				int y = rand.Next(bounds.Y + 2, bounds.MaxY - 4);
 				if (buf[x, y].Object != null)
 					continue;
 
