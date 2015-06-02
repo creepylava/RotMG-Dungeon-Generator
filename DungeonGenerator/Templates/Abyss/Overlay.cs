@@ -20,9 +20,14 @@
 
 using System;
 using DungeonGenerator.Dungeon;
+using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates.Abyss {
 	internal class Overlay : MapRender {
+		static readonly DungeonObject floor = new DungeonObject {
+			ObjectType = AbyssTemplate.PartialRedFloor
+		};
+
 		byte[,] GenerateHeightMap(int w, int h) {
 			float[,] map = new float[w, h];
 			int maxR = Math.Min(w, h);
@@ -67,11 +72,7 @@ namespace DungeonGenerator.Templates.Abyss {
 			return a + (int)((b - a) * val);
 		}
 
-		public override void Rasterize() {
-			var floor = new DungeonObject {
-				ObjectType = AbyssTemplate.PartialRedFloor
-			};
-
+		void RenderBackground() {
 			const int Sample = 4;
 
 			int w = Rasterizer.Width, h = Rasterizer.Height;
@@ -100,6 +101,96 @@ namespace DungeonGenerator.Templates.Abyss {
 							buf[x, y].Object = floor;
 					}
 				}
+		}
+
+		void RenderSafeGround() {
+			StartRoom startRm = null;
+			foreach (var room in Graph.Rooms)
+				if (room is StartRoom) {
+					startRm = (StartRoom)room;
+					break;
+				}
+
+			if (startRm == null)
+				return;
+
+			var buf = Rasterizer.Bitmap;
+			var pos = startRm.portalPos;
+			for (int dx = -1; dx <= 1; dx++)
+				for (int dy = -1; dy <= 1; dy++) {
+					var tile = buf[pos.X + dx, pos.Y + dy];
+					if (tile.TileType == AbyssTemplate.Lava) {
+						tile.TileType = AbyssTemplate.RedSmallChecks;
+						if (tile.Object != null && tile.Object.ObjectType != AbyssTemplate.CowardicePortal)
+							tile.Object = null;
+					}
+					buf[pos.X + dx, pos.Y + dy] = tile;
+				}
+		}
+
+		void RenderConnection() {
+			var buf = Rasterizer.Bitmap;
+			foreach (var room in Graph.Rooms) {
+				var xRange = new Range(room.Width * 1 / 4, room.Width * 3 / 4);
+				var yRange = new Range(room.Height * 1 / 4, room.Height * 3 / 4);
+				var pt = new Point(room.Pos.X + xRange.Random(Rand), room.Pos.Y + yRange.Random(Rand));
+
+				foreach (var edge in room.Edges) {
+					var direction = edge.Linkage.Direction;
+
+					if (edge.RoomA != room)
+						direction = direction.Reverse();
+
+					var randOffset = edge.Linkage.Offset % 3;
+
+					Point pos;
+					switch (direction) {
+						case Direction.North:
+							pos = new Point(edge.Linkage.Offset + randOffset, room.Pos.Y);
+							break;
+
+						case Direction.South:
+							pos = new Point(edge.Linkage.Offset + randOffset, room.Pos.Y + room.Height);
+							break;
+
+						case Direction.West:
+							pos = new Point(room.Pos.X, edge.Linkage.Offset + randOffset);
+							break;
+
+						case Direction.East:
+							pos = new Point(room.Pos.X + room.Width, edge.Linkage.Offset + randOffset);
+							break;
+
+						default:
+							throw new ArgumentException();
+					}
+					Rasterizer.DrawLine(pos, pt, (x, y) => {
+						if (buf[x, y].TileType == AbyssTemplate.Lava)
+							return new DungeonTile {
+								TileType = AbyssTemplate.Lava,
+								Object = floor
+							};
+						return buf[x, y];
+					}, 1);
+				}
+
+				if (room is StartRoom) {
+					Rasterizer.DrawLine(((StartRoom)room).portalPos, pt, (x, y) => {
+						if (buf[x, y].TileType == AbyssTemplate.Lava)
+							return new DungeonTile {
+								TileType = AbyssTemplate.Lava,
+								Object = floor
+							};
+						return buf[x, y];
+					}, 1);
+				}
+			}
+		}
+
+		public override void Rasterize() {
+			RenderBackground();
+			RenderSafeGround();
+			RenderConnection();
 		}
 	}
 }

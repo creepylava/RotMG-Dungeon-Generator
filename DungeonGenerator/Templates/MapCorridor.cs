@@ -42,12 +42,12 @@ namespace DungeonGenerator.Templates {
 			if (srcPos.X == dstPos.X) {
 				if (srcPos.Y > dstPos.Y)
 					Utils.Swap(ref srcPos, ref dstPos);
-				Rasterizer.FillRect(new Rect(srcPos.X, srcPos.Y, srcPos.X + 3, dstPos.Y), tile);
+				Rasterizer.FillRect(new Rect(srcPos.X, srcPos.Y, srcPos.X + Graph.Template.CorridorWidth, dstPos.Y), tile);
 			}
 			else if (srcPos.Y == dstPos.Y) {
 				if (srcPos.X > dstPos.X)
 					Utils.Swap(ref srcPos, ref dstPos);
-				Rasterizer.FillRect(new Rect(srcPos.X, srcPos.Y, dstPos.X, srcPos.Y + 3), tile);
+				Rasterizer.FillRect(new Rect(srcPos.X, srcPos.Y, dstPos.X, srcPos.Y + Graph.Template.CorridorWidth), tile);
 			}
 		}
 	}

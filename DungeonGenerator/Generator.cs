@@ -210,23 +210,7 @@ namespace DungeonGenerator {
 		}
 
 		Link? PlaceRoomTargetFixed(Room src, FixedRoom target, int connPt, int sep) {
-			Direction targetDir;
-			switch (connPt) {
-				case 0:
-					targetDir = Direction.North;
-					break;
-				case 1:
-					targetDir = Direction.West;
-					break;
-				case 2:
-					targetDir = Direction.South;
-					break;
-				case 3:
-					targetDir = Direction.East;
-					break;
-				default:
-					throw new ArgumentException();
-			}
+			var targetDir = ((Direction)connPt).Reverse();
 
 			var connPts = (Tuple<Direction, int>[])target.ConnectionPoints.Clone();
 			rand.Shuffle(connPts);

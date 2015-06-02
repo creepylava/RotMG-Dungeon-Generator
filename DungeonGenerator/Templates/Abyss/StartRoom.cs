@@ -25,6 +25,7 @@ using RotMG.Common.Rasterizer;
 namespace DungeonGenerator.Templates.Abyss {
 	internal class StartRoom : Room {
 		readonly int len;
+		internal Point portalPos;
 
 		public StartRoom(int len) {
 			this.len = len;
@@ -55,6 +56,7 @@ namespace DungeonGenerator.Templates.Abyss {
 				buf[x, y].Object = new DungeonObject {
 					ObjectType = AbyssTemplate.CowardicePortal
 				};
+				portalPos = new Point(x, y);
 				portalPlaced = true;
 			}
 		}
