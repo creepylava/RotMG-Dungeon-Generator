@@ -304,7 +304,7 @@ namespace DungeonGenerator {
 					if (collision.HitTest(target))
 						return null;
 
-					link = new Link((Direction)connPt, src.Pos.X + conn.Item2);
+					link = new Link(conn.Item1, src.Pos.X + conn.Item2);
 					break;
 
 				case Direction.East:
@@ -321,7 +321,7 @@ namespace DungeonGenerator {
 					if (collision.HitTest(target))
 						return null;
 
-					link = new Link((Direction)connPt, src.Pos.Y + conn.Item2);
+					link = new Link(conn.Item1, src.Pos.Y + conn.Item2);
 					break;
 			}
 
@@ -392,6 +392,9 @@ namespace DungeonGenerator {
 		}
 
 		void GenerateSpecials() {
+			if (template.SpecialRmCount == null)
+				return;
+
 			int numRooms = (int)template.SpecialRmCount.NextValue();
 			for (int i = 0; i < numRooms; i++) {
 				int targetDepth;
@@ -464,7 +467,7 @@ namespace DungeonGenerator {
 			var seq = Enumerable.Range(0, connPtNum).ToList();
 			rand.Shuffle(seq);
 
-			var numBranch = new Range(1, connPtNum).Random(rand);
+			var numBranch = prev.NumBranches.Random(rand);
 			numBranch -= prev.Edges.Count;
 			for (int i = 0; i < numBranch; i++) {
 				var rm = template.CreateNormal(depth, prev);

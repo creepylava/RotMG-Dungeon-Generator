@@ -26,7 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using DungeonGenerator.Dungeon;
-using DungeonGenerator.Templates.Abyss;
+using DungeonGenerator.Templates.Lab;
 
 namespace DungeonGenerator {
 	public partial class frmMain : Form {
@@ -220,7 +220,7 @@ namespace DungeonGenerator {
 
 		void btnNewStep_Click(object sender, EventArgs e) {
 			seed = rand.Next();
-			gen = new Generator(seed, new AbyssTemplate());
+			gen = new Generator(seed, new LabTemplate());
 			ras = null;
 			Text = ProductName + " [Seed: " + seed + "]";
 
