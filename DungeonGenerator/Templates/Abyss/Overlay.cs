@@ -28,6 +28,10 @@ namespace DungeonGenerator.Templates.Abyss {
 			ObjectType = AbyssTemplate.PartialRedFloor
 		};
 
+		static readonly DungeonObject broken = new DungeonObject {
+			ObjectType = AbyssTemplate.BrokenRedPillar
+		};
+
 		byte[,] GenerateHeightMap(int w, int h) {
 			float[,] map = new float[w, h];
 			int maxR = Math.Min(w, h);
@@ -128,8 +132,49 @@ namespace DungeonGenerator.Templates.Abyss {
 				}
 		}
 
+		void RenderLavaGround(Point a, Point b) {
+			Rasterizer.DrawLine(a, b, (x, y) => {
+				if (Rasterizer.Bitmap[x, y].TileType == AbyssTemplate.Lava)
+					return new DungeonTile {
+						TileType = AbyssTemplate.Lava,
+						Object = floor
+					};
+				return Rasterizer.Bitmap[x, y];
+			}, 1);
+		}
+
+		void RenderBossEdge(Room src, Room dst, Direction direction, int offset) {
+			switch (direction) {
+				case Direction.North:
+					RenderLavaGround(
+						new Point(offset, dst.Pos.Y + 35),
+						new Point(offset, src.Pos.Y));
+					break;
+
+				case Direction.South:
+					RenderLavaGround(
+						new Point(offset, src.Pos.Y + src.Height),
+						new Point(offset, dst.Pos.Y + 10));
+					break;
+
+				case Direction.West:
+					RenderLavaGround(
+						new Point(dst.Pos.X + 35, offset),
+						new Point(src.Pos.X, offset));
+					break;
+
+				case Direction.East:
+					RenderLavaGround(
+						new Point(src.Pos.X + src.Width, offset),
+						new Point(dst.Pos.X + 10, offset));
+					break;
+
+				default:
+					throw new ArgumentException();
+			}
+		}
+
 		void RenderConnection() {
-			var buf = Rasterizer.Bitmap;
 			foreach (var room in Graph.Rooms) {
 				var xRange = new Range(room.Width * 1 / 4, room.Width * 3 / 4);
 				var yRange = new Range(room.Height * 1 / 4, room.Height * 3 / 4);
@@ -137,60 +182,65 @@ namespace DungeonGenerator.Templates.Abyss {
 
 				foreach (var edge in room.Edges) {
 					var direction = edge.Linkage.Direction;
+					var randOffset = edge.Linkage.Offset + edge.Linkage.Offset % 3;
 
 					if (edge.RoomA != room)
 						direction = direction.Reverse();
+					else if (edge.RoomB is BossRoom) {
+						RenderBossEdge(edge.RoomA, edge.RoomB, direction, randOffset);
+					}
+					else if (edge.RoomA is BossRoom) {
+						RenderBossEdge(edge.RoomB, edge.RoomA, direction.Reverse(), randOffset);
+					}
 
-					var randOffset = edge.Linkage.Offset % 3;
+					if (room is BossRoom)
+						continue;
 
 					Point pos;
 					switch (direction) {
 						case Direction.North:
-							pos = new Point(edge.Linkage.Offset + randOffset, room.Pos.Y);
+							pos = new Point(randOffset, room.Pos.Y);
 							break;
 
 						case Direction.South:
-							pos = new Point(edge.Linkage.Offset + randOffset, room.Pos.Y + room.Height);
+							pos = new Point(randOffset, room.Pos.Y + room.Height);
 							break;
 
 						case Direction.West:
-							pos = new Point(room.Pos.X, edge.Linkage.Offset + randOffset);
+							pos = new Point(room.Pos.X, randOffset);
 							break;
 
 						case Direction.East:
-							pos = new Point(room.Pos.X + room.Width, edge.Linkage.Offset + randOffset);
+							pos = new Point(room.Pos.X + room.Width, randOffset);
 							break;
 
 						default:
 							throw new ArgumentException();
 					}
-					Rasterizer.DrawLine(pos, pt, (x, y) => {
-						if (buf[x, y].TileType == AbyssTemplate.Lava)
-							return new DungeonTile {
-								TileType = AbyssTemplate.Lava,
-								Object = floor
-							};
-						return buf[x, y];
-					}, 1);
+					RenderLavaGround(pos, pt);
 				}
 
-				if (room is StartRoom) {
-					Rasterizer.DrawLine(((StartRoom)room).portalPos, pt, (x, y) => {
-						if (buf[x, y].TileType == AbyssTemplate.Lava)
-							return new DungeonTile {
-								TileType = AbyssTemplate.Lava,
-								Object = floor
-							};
-						return buf[x, y];
-					}, 1);
-				}
+				if (room is StartRoom)
+					RenderLavaGround(((StartRoom)room).portalPos, pt);
 			}
+		}
+
+		void RenderPillars() {
+			var buf = Rasterizer.Bitmap;
+			int w = Rasterizer.Width, h = Rasterizer.Height;
+			for (int x = 0; x < w; x++)
+				for (int y = 0; y < h; y++) {
+					if (buf[x, y].Object != null && buf[x, y].Object.ObjectType == AbyssTemplate.RedPillar &&
+					    Rand.NextDouble() > 0.7)
+						buf[x, y].Object = broken;
+				}
 		}
 
 		public override void Rasterize() {
 			RenderBackground();
 			RenderSafeGround();
 			RenderConnection();
+			RenderPillars();
 		}
 	}
 }
