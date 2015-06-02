@@ -33,19 +33,19 @@ namespace DungeonGenerator.Dungeon {
 		}
 
 		public static bool operator ==(ObjectType a, ObjectType b) {
-			return a.Id == b.Id;
+			return a.Id == b.Id || a.Name == b.Name;
 		}
 
 		public static bool operator !=(ObjectType a, ObjectType b) {
-			return a.Id != b.Id;
+			return a.Id != b.Id && a.Name != b.Name;
 		}
 
 		public override int GetHashCode() {
-			return Id.GetHashCode();
+			return Name.GetHashCode();
 		}
 
 		public override bool Equals(object obj) {
-			return obj is ObjectType && ((ObjectType)obj).Id == Id;
+			return obj is ObjectType && (ObjectType)obj == this;
 		}
 
 		public override string ToString() {
