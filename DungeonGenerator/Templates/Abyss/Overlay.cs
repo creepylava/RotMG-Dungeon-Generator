@@ -236,11 +236,52 @@ namespace DungeonGenerator.Templates.Abyss {
 				}
 		}
 
+		void RenderWalls() {
+			var wallA = new DungeonTile {
+				TileType = AbyssTemplate.Space,
+				Object = new DungeonObject {
+					ObjectType = AbyssTemplate.RedWall
+				}
+			};
+			var wallB = new DungeonTile {
+				TileType = AbyssTemplate.Space,
+				Object = new DungeonObject {
+					ObjectType = AbyssTemplate.RedTorchWall
+				}
+			};
+
+			var buf = Rasterizer.Bitmap;
+			var tmp = (DungeonTile[,])buf.Clone();
+			int w = Rasterizer.Width, h = Rasterizer.Height;
+
+			for (int x = 0; x < w; x++)
+				for (int y = 0; y < h; y++) {
+					if (buf[x, y].TileType != AbyssTemplate.Space)
+						continue;
+
+					bool notWall = true;
+					if (x == 0 || y == 0 || x + 1 == w || y + 1 == h)
+						notWall = true;
+					else {
+						for (int dx = -1; dx <= 1 && notWall; dx++)
+							for (int dy = -1; dy <= 1 && notWall; dy++) {
+								if (tmp[x + dx, y + dy].TileType != AbyssTemplate.Space) {
+									notWall = false;
+									break;
+								}
+							}
+					}
+					if (!notWall)
+						buf[x, y] = Rand.NextDouble() < 0.9 ? wallA : wallB;
+				}
+		}
+
 		public override void Rasterize() {
 			RenderBackground();
 			RenderSafeGround();
 			RenderConnection();
 			RenderPillars();
+			RenderWalls();
 		}
 	}
 }

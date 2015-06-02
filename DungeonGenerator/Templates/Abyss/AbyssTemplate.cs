@@ -29,7 +29,7 @@ namespace DungeonGenerator.Templates.Abyss {
 		internal static readonly TileType Space = new TileType(0x00fe, "Space");
 
 		internal static readonly ObjectType RedWall = new ObjectType(0x0150, "Red Wall");
-		internal static readonly ObjectType RedTorchWall = new ObjectType(0x0151, "Red Torch Tree");
+		internal static readonly ObjectType RedTorchWall = new ObjectType(0x0151, "Red Torch Wall");
 		internal static readonly ObjectType PartialRedFloor = new ObjectType(0x0153, "Partial Red Floor");
 		internal static readonly ObjectType RedPillar = new ObjectType(0x017e, "Red Pillar");
 		internal static readonly ObjectType BrokenRedPillar = new ObjectType(0x0183, "Broken Red Pillar");
