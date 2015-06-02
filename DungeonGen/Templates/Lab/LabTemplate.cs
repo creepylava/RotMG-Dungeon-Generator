@@ -43,8 +43,13 @@ namespace DungeonGenerator.Templates.Lab {
 
 		public override int CorridorWidth { get { return 4; } }
 
+		public override Range NumRoomRate { get { return new Range(2, 3); } }
+
+		bool generatedEvilRoom;
+
 		public override void Initialize() {
 			targetDepth = new NormDist(3, 10, 7, 15, Rand.Next());
+			generatedEvilRoom = false;
 		}
 
 		public override Room CreateStart(int depth) {
@@ -60,7 +65,10 @@ namespace DungeonGenerator.Templates.Lab {
 		}
 
 		public override Room CreateNormal(int depth, Room prev) {
-			return new NormalRoom(prev as NormalRoom, Rand);
+			var rm = new NormalRoom(prev as NormalRoom, Rand, generatedEvilRoom);
+			if ((rm.Flags & NormalRoom.RoomFlags.Evil) != 0)
+				generatedEvilRoom = true;
+			return rm;
 		}
 	}
 }

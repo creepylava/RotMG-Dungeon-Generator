@@ -61,5 +61,18 @@ namespace DungeonGenerator.Dungeon {
 			a.Edges.Add(edge);
 			b.Edges.Add(edge);
 		}
+
+		public static void UnLink(Room a, Room b) {
+			Edge edge = null;
+			foreach (var ed in a.Edges)
+				if (ed.RoomA == b || ed.RoomB == b) {
+					edge = ed;
+					break;
+				}
+			if (edge == null)
+				throw new ArgumentException();
+			a.Edges.Remove(edge);
+			b.Edges.Remove(edge);
+		}
 	}
 }
