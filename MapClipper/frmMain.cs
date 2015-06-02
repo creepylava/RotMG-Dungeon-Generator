@@ -27,14 +27,47 @@ using RotMG.Common.Rasterizer;
 
 namespace MapClipper {
 	public partial class frmMain : Form {
+		class CommandIntercepter : NativeWindow {
+			readonly frmMain main;
+			readonly TextBox txt;
+
+			public CommandIntercepter(frmMain main, TextBox txt) {
+				this.main = main;
+				this.txt = txt;
+				txt.HandleCreated += (sender, e) => AssignHandle(txt.Handle);
+				txt.HandleDestroyed += (sender, e) => ReleaseHandle();
+			}
+
+			protected override void WndProc(ref Message m) {
+				switch (m.Msg) {
+					case 0x302:
+						var text = Clipboard.GetText();
+						if (string.IsNullOrEmpty(text))
+							break;
+
+						var cmds = text.Split('\r', '\n');
+						for (int i = 0; i < cmds.Length - 1; i++)
+							main.RunCmd(cmds[i].Trim());
+
+						txt.Text = cmds[cmds.Length - 1];
+
+						return;
+				}
+				base.WndProc(ref m);
+			}
+		}
+
+		CommandIntercepter intercepter;
+
 		public frmMain() {
 			InitializeComponent();
+			intercepter = new CommandIntercepter(this, txtCmd);
 		}
 
 		DungeonTile[,] map;
 		Rect selection;
 
-		readonly DungeonTile[][,] clip = new DungeonTile[10][,];
+		readonly DungeonTile[][,] clip = new DungeonTile[100][,];
 
 		static readonly DungeonTile space = new DungeonTile {
 			TileType = new TileType(0x00fe, "Space")
@@ -68,10 +101,17 @@ namespace MapClipper {
 		}
 
 		void txtCmd_KeyDown(object sender, KeyEventArgs e) {
-			if (e.KeyCode != Keys.Enter || txtCmd.Text.Length == 0)
+			if (e.KeyCode != Keys.Enter)
 				return;
 
 			var cmd = txtCmd.Text;
+			RunCmd(cmd);
+		}
+
+		void RunCmd(string cmd) {
+			if (string.IsNullOrEmpty(cmd))
+				return;
+
 			AppendLine("> " + cmd);
 			txtCmd.Clear();
 
@@ -89,7 +129,7 @@ namespace MapClipper {
 			var args = cmd.Substring(index + 1);
 
 			switch (cmdName) {
-				case "NEW":
+				case "NEW": {
 					var size = args.Split(' ');
 					int w = int.Parse(size[0]);
 					int h = int.Parse(size[1]);
@@ -99,6 +139,25 @@ namespace MapClipper {
 							map[x, y] = space;
 					AppendLine("New map " + w + "x" + h + " created.");
 					break;
+				}
+
+				case "RESIZE": {
+					var size = args.Split(' ');
+					int w = int.Parse(size[0]);
+					int h = int.Parse(size[1]);
+					int _w = map.GetUpperBound(0) + 1, _h = map.GetUpperBound(1) + 1;
+					var newMap = new DungeonTile[w, h];
+					for (int x = 0; x < w; x++)
+						for (int y = 0; y < h; y++) {
+							if (x < _w && y < _h)
+								newMap[x, y] = map[x, y];
+							else
+								newMap[x, y] = space;
+						}
+					map = newMap;
+					AppendLine("Resized to " + w + "x" + h + ".");
+					break;
+				}
 
 				case "LOAD":
 					LoadMap(args);

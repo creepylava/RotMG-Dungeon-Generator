@@ -97,7 +97,7 @@ namespace DungeonGenerator {
 		Link? PlaceRoom(Room src, Room target, int connPt) {
 			var sep = template.RoomSeparation.Random(rand);
 			if (src is FixedRoom && target is FixedRoom)
-				throw new NotSupportedException();
+				return PlaceRoomFixed((FixedRoom)src, (FixedRoom)target, connPt, sep);
 			if (src is FixedRoom)
 				return PlaceRoomSourceFixed((FixedRoom)src, target, connPt, sep);
 			if (target is FixedRoom)
@@ -264,6 +264,64 @@ namespace DungeonGenerator {
 						return null;
 
 					link = new Link((Direction)connPt, target.Pos.Y + conn.Item2);
+					break;
+			}
+
+			collision.Add(target);
+			return link;
+		}
+
+		Link? PlaceRoomFixed(FixedRoom src, FixedRoom target, int connPt, int sep) {
+			var conn = src.ConnectionPoints[connPt];
+
+			var targetDirection = conn.Item1.Reverse();
+			var targetConns = (Tuple<Direction, int>[])target.ConnectionPoints.Clone();
+			rand.Shuffle(targetConns);
+			Tuple<Direction, int> targetConnPt = null;
+			foreach (var targetConn in targetConns)
+				if (targetConn.Item1 == targetDirection) {
+					targetConnPt = targetConn;
+					break;
+				}
+
+			if (targetConnPt == null)
+				return null;
+
+			int x, y;
+			Link? link = null;
+			switch (conn.Item1) {
+				case Direction.North:
+				case Direction.South:
+					// North & South
+					x = src.Pos.X + conn.Item2 - targetConnPt.Item2;
+
+					if (conn.Item1 == Direction.South)
+						y = src.Pos.Y + src.Height + sep;
+					else
+						y = src.Pos.Y - sep - target.Height;
+
+					target.Pos = new Point(x, y);
+					if (collision.HitTest(target))
+						return null;
+
+					link = new Link((Direction)connPt, src.Pos.X + conn.Item2);
+					break;
+
+				case Direction.East:
+				case Direction.West:
+					// East & West
+					y = src.Pos.Y + conn.Item2 - targetConnPt.Item2;
+
+					if (conn.Item1 == Direction.East)
+						x = src.Pos.X + src.Width + sep;
+					else
+						x = src.Pos.X - sep - target.Width;
+
+					target.Pos = new Point(x, y);
+					if (collision.HitTest(target))
+						return null;
+
+					link = new Link((Direction)connPt, src.Pos.Y + conn.Item2);
 					break;
 			}
 
