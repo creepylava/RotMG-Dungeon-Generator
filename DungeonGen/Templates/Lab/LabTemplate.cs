@@ -25,6 +25,7 @@ using RotMG.Common;
 namespace DungeonGenerator.Templates.Lab {
 	public class LabTemplate : DungeonTemplate {
 		internal static readonly TileType LabFloor = new TileType(0x00d3, "Lab Floor");
+		internal static readonly ObjectType DestructibleWall = new ObjectType(0x18c3, "Lab Destructible Wall");
 
 		internal static readonly DungeonTile[,] MapTemplate;
 
@@ -41,7 +42,7 @@ namespace DungeonGenerator.Templates.Lab {
 
 		public override NormDist SpecialRmDepthDist { get { return null; } }
 
-		public override Range RoomSeparation { get { return new Range(7, 10); } }
+		public override Range RoomSeparation { get { return new Range(6, 8); } }
 
 		public override int CorridorWidth { get { return 4; } }
 
