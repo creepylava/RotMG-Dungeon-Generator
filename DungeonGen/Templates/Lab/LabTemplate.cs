@@ -24,6 +24,8 @@ using RotMG.Common;
 
 namespace DungeonGenerator.Templates.Lab {
 	public class LabTemplate : DungeonTemplate {
+		internal static readonly TileType LabFloor = new TileType(0x00d3, "Lab Floor");
+
 		internal static readonly DungeonTile[,] MapTemplate;
 
 		static LabTemplate() {
@@ -69,6 +71,10 @@ namespace DungeonGenerator.Templates.Lab {
 			if ((rm.Flags & NormalRoom.RoomFlags.Evil) != 0)
 				generatedEvilRoom = true;
 			return rm;
+		}
+
+		public override MapCorridor CreateCorridor() {
+			return new Corridor();
 		}
 	}
 }

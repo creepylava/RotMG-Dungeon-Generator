@@ -155,7 +155,7 @@ namespace DungeonGenerator.Templates.Lab {
 				Tuple.Create(Direction.East, 5),
 				Tuple.Create(Direction.West, 5)
 				),
-			new RoomTemplate(Rect(52, 132, 28, 28),
+			new RoomTemplate(Rect(52, 132, 28, 20),
 				new Range(1, 3), 0,
 				Tuple.Create(Direction.North, 3),
 				Tuple.Create(Direction.South, 3),

@@ -63,6 +63,7 @@
     <Compile Include="Templates\Abyss\TreasureRoom.cs" />
     <Compile Include="Templates\DungeonTemplate.cs" />
     <Compile Include="Templates\Lab\BossRoom.cs" />
+    <Compile Include="Templates\Lab\Corridor.cs" />
     <Compile Include="Templates\Lab\NormalRoom.cs" />
     <Compile Include="Templates\Lab\StartRoom.cs" />
     <Compile Include="Templates\Lab\LabTemplate.cs" />
