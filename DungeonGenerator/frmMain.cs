@@ -26,7 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using DungeonGenerator.Dungeon;
-using DungeonGenerator.Templates.Lab;
+using DungeonGenerator.Templates;
 
 namespace DungeonGenerator {
 	public partial class frmMain : Form {
@@ -34,11 +34,17 @@ namespace DungeonGenerator {
 			InitializeComponent();
 		}
 
+		class Template {
+			public string Name { get; set; }
+			public DungeonTemplate Item { get; set; }
+		}
+
 		readonly Random rand = new Random();
 		readonly List<Button> btns = new List<Button>();
 		int seed;
 		Generator gen;
 		Rasterizer ras;
+		DungeonTemplate active;
 
 		void frmMain_Load(object sender, EventArgs e) {
 			foreach (var value in Enum.GetValues(typeof(GenerationStep))) {
@@ -57,6 +63,16 @@ namespace DungeonGenerator {
 				stepsPane.Controls.Add(btn);
 				btns.Add(btn);
 			}
+			foreach (var type in typeof(Generator).Assembly.GetTypes()) {
+				if (!type.IsSubclassOf(typeof(DungeonTemplate)))
+					continue;
+				var name = type.Namespace.Substring(type.Namespace.LastIndexOf('.') + 1);
+				comTemplates.Items.Add(new Template {
+					Name = name,
+					Item = (DungeonTemplate)Activator.CreateInstance(type)
+				});
+			}
+			comTemplates.SelectedIndex = 0;
 			stepsPane.Enabled = false;
 		}
 
@@ -220,7 +236,7 @@ namespace DungeonGenerator {
 
 		void btnNewStep_Click(object sender, EventArgs e) {
 			seed = rand.Next();
-			gen = new Generator(seed, new LabTemplate());
+			gen = new Generator(seed, active);
 			ras = null;
 			Text = ProductName + " [Seed: " + seed + "]";
 
@@ -257,6 +273,11 @@ namespace DungeonGenerator {
 			sfd.Filter = "Json Map (*.jm)|*.jm|All Files (*.*)|*.*";
 			if (sfd.ShowDialog() == DialogResult.OK)
 				File.WriteAllText(sfd.FileName, json);
+		}
+
+		void comTemplates_SelectedIndexChanged(object sender, EventArgs e) {
+			if (comTemplates.SelectedItem != null)
+				active = ((Template)comTemplates.SelectedItem).Item;
 		}
 	}
 }
