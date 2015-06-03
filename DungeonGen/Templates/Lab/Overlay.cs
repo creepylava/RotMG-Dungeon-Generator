@@ -20,27 +20,39 @@
 
 using System;
 using DungeonGenerator.Dungeon;
-using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates.Lab {
-	internal class BossRoom : FixedRoom {
-		static readonly Rect template = new Rect(0, 0, 24, 50);
+	internal class Overlay : MapRender {
+		public override void Rasterize() {
+			var wall = new DungeonTile {
+				TileType = LabTemplate.Space,
+				Object = new DungeonObject {
+					ObjectType = LabTemplate.LabWall
+				}
+			};
 
-		public override RoomType Type { get { return RoomType.Target; } }
+			int w = Rasterizer.Width, h = Rasterizer.Height;
+			var buf = Rasterizer.Bitmap;
+			for (int x = 0; x < w; x++)
+				for (int y = 0; y < h; y++) {
+					if (buf[x, y].TileType != LabTemplate.Space || buf[x, y].Object != null)
+						continue;
 
-		public override int Width { get { return template.MaxX - template.X; } }
-
-		public override int Height { get { return template.MaxY - template.Y; } }
-
-		static readonly Tuple<Direction, int>[] connections = {
-			Tuple.Create(Direction.South, 10)
-		};
-
-		public override Tuple<Direction, int>[] ConnectionPoints { get { return connections; } }
-
-		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand) {
-			rasterizer.Copy(LabTemplate.MapTemplate, template, Pos);
-			LabTemplate.DrawSpiderWeb(rasterizer, Bounds, rand);
+					bool isWall = false;
+					if (x == 0 || y == 0 || x + 1 == w || y + 1 == h)
+						isWall = false;
+					else {
+						for (int dx = -1; dx <= 1 && !isWall; dx++)
+							for (int dy = -1; dy <= 1 && !isWall; dy++) {
+								if (buf[x + dx, y + dy].TileType != LabTemplate.Space) {
+									isWall = true;
+									break;
+								}
+							}
+					}
+					if (isWall)
+						buf[x, y] = wall;
+				}
 		}
 	}
 }

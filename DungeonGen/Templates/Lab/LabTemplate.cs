@@ -21,11 +21,20 @@
 using System;
 using DungeonGenerator.Dungeon;
 using RotMG.Common;
+using RotMG.Common.Rasterizer;
 
 namespace DungeonGenerator.Templates.Lab {
 	public class LabTemplate : DungeonTemplate {
 		internal static readonly TileType LabFloor = new TileType(0x00d3, "Lab Floor");
+		internal static readonly TileType Space = new TileType(0x00fe, "Space");
+
+		internal static readonly ObjectType LabWall = new ObjectType(0x188c, "Lab Wall");
 		internal static readonly ObjectType DestructibleWall = new ObjectType(0x18c3, "Lab Destructible Wall");
+		internal static readonly ObjectType Web = new ObjectType(0x0732, "Spider Web");
+
+		static readonly DungeonObject web = new DungeonObject {
+			ObjectType = Web
+		};
 
 		internal static readonly DungeonTile[,] MapTemplate;
 
@@ -76,6 +85,24 @@ namespace DungeonGenerator.Templates.Lab {
 
 		public override MapCorridor CreateCorridor() {
 			return new Corridor();
+		}
+
+		public override MapRender CreateOverlay() {
+			return new Overlay();
+		}
+
+		internal static void DrawSpiderWeb(BitmapRasterizer<DungeonTile> rasterizer, Rect bounds, Random rand) {
+			int w = rasterizer.Width, h = rasterizer.Height;
+			var buf = rasterizer.Bitmap;
+
+			for (int x = bounds.X; x < bounds.MaxX; x++)
+				for (int y = bounds.Y; y < bounds.MaxY; y++) {
+					if (buf[x, y].TileType == Space || buf[x, y].Object != null)
+						continue;
+
+					if (rand.NextDouble() > 0.99)
+						buf[x, y].Object = web;
+				}
 		}
 	}
 }

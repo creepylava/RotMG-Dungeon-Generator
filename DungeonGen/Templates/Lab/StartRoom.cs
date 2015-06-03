@@ -39,10 +39,8 @@ namespace DungeonGenerator.Templates.Lab {
 		public override Tuple<Direction, int>[] ConnectionPoints { get { return connections; } }
 
 		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand) {
-			var buf = rasterizer.Bitmap;
-			var bounds = Bounds;
-
 			rasterizer.Copy(LabTemplate.MapTemplate, template, Pos);
+			LabTemplate.DrawSpiderWeb(rasterizer, Bounds, rand);
 		}
 	}
 }

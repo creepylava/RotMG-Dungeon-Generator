@@ -238,9 +238,6 @@ namespace DungeonGenerator.Templates.Lab {
 		public RoomFlags Flags { get { return current.Flags; } }
 
 		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand) {
-			var buf = rasterizer.Bitmap;
-			var bounds = Bounds;
-
 			rasterizer.Copy(LabTemplate.MapTemplate, current.Bounds, Pos);
 
 			var flags = current.Flags & RoomFlags.ConnectionMask;
@@ -294,6 +291,8 @@ namespace DungeonGenerator.Templates.Lab {
 				}
 				rasterizer.DrawLine(a, b, tile.Value);
 			}
+
+			LabTemplate.DrawSpiderWeb(rasterizer, Bounds, rand);
 		}
 	}
 }
