@@ -32,6 +32,17 @@ namespace DungeonGenerator.Templates.Lab {
 		internal static readonly ObjectType DestructibleWall = new ObjectType(0x18c3, "Lab Destructible Wall");
 		internal static readonly ObjectType Web = new ObjectType(0x0732, "Spider Web");
 
+		internal static readonly ObjectType[] Big = {
+			new ObjectType(0x0981, "Escaped Experiment"),
+			new ObjectType(0x0982, "Enforcer Bot 3000"),
+			new ObjectType(0x0983, "Crusher Abomination")
+		};
+
+		internal static readonly ObjectType[] Small = {
+			new ObjectType(0x0979, "Mini Bot"),
+			new ObjectType(0x0980, "Rampage Cyborg")
+		};
+
 		static readonly DungeonObject web = new DungeonObject {
 			ObjectType = Web
 		};
@@ -103,6 +114,38 @@ namespace DungeonGenerator.Templates.Lab {
 					if (rand.NextDouble() > 0.99)
 						buf[x, y].Object = web;
 				}
+		}
+
+		internal static void CreateEnemies(BitmapRasterizer<DungeonTile> rasterizer, Rect bounds, Random rand) {
+			int numBig = new Range(0, 3).Random(rand);
+			int numSmall = new Range(4, 10).Random(rand);
+
+			var buf = rasterizer.Bitmap;
+			while (numBig > 0 || numSmall > 0) {
+				int x = rand.Next(bounds.X, bounds.MaxX);
+				int y = rand.Next(bounds.Y, bounds.MaxY);
+				if (buf[x, y].TileType == Space || buf[x, y].Object != null)
+					continue;
+
+				switch (rand.Next(2)) {
+					case 0:
+						if (numBig > 0) {
+							buf[x, y].Object = new DungeonObject {
+								ObjectType = Big[rand.Next(Big.Length)]
+							};
+							numBig--;
+						}
+						break;
+					case 1:
+						if (numSmall > 0) {
+							buf[x, y].Object = new DungeonObject {
+								ObjectType = Small[rand.Next(Small.Length)]
+							};
+							numSmall--;
+						}
+						break;
+				}
+			}
 		}
 	}
 }

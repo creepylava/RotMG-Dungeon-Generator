@@ -240,6 +240,9 @@ namespace DungeonGenerator.Templates.Lab {
 		public override void Rasterize(BitmapRasterizer<DungeonTile> rasterizer, Random rand) {
 			rasterizer.Copy(LabTemplate.MapTemplate, current.Bounds, Pos);
 
+			if ((current.Flags & RoomFlags.Evil) == 0)
+				LabTemplate.CreateEnemies(rasterizer, Bounds, rand);
+
 			var flags = current.Flags & RoomFlags.ConnectionMask;
 			DungeonTile? tile = null;
 			switch (flags) {
